@@ -1,4 +1,4 @@
-```html
+`html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -37,6 +37,7 @@
             /* إخفاء حدود المعاينة والظلال في الطباعة */
             .preview-container { border: none !important; box-shadow: none !important; }
             .border-black { border-color: black !important; }
+            .print-no-border { border-bottom: none !important; margin-bottom: 0 !important; padding-bottom: 0 !important; }
         }
 
         /* -------------------------------------- */
@@ -48,6 +49,7 @@
             padding: 10px 5px;
             text-align: center;
             width: 100%;
+            box-sizing: border-box;
         }
 
         /* 1. مقاس 8 سم (80mm) الافتراضي */
@@ -66,15 +68,23 @@
         .layout-58 .p-price { font-size: 14pt; font-weight: 900; }
         .layout-58 .p-shop { font-size: 9pt; font-weight: 700; border-top: 1px dashed black; padding-top: 3px; margin-top: 3px; }
 
-        /* 3. مقاس 8 سم مقسوم (استيكرين تسعير بجوار بعض) */
-        .layout-split .preview-container { width: 320px; margin: 0 auto; }
-        .layout-split #print-area { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 5px; }
-        /* تصغير الخطوط لتناسب نصف المساحة */
-        .layout-split .p-name { font-size: 12pt; font-weight: 900; margin-bottom: 2px; line-height: 1.1; }
-        .layout-split .p-desc { font-size: 9pt; font-weight: 700; margin-bottom: 2px; }
-        .layout-split .p-price-box { display: inline-block; border: 1px solid black; border-radius: 4px; padding: 1px 4px; margin: 4px 0; }
-        .layout-split .p-price { font-size: 12pt; font-weight: 900; }
-        .layout-split .p-shop { font-size: 7pt; font-weight: 700; border-top: 1px dashed black; padding-top: 2px; margin-top: 2px; }
+        /* 3. مقاس 8 سم مقسوم (استيكرين فوق بعض) */
+        .layout-split .preview-container { width: 300px; margin: 0 auto; } /* العرض يبقى 8 سم */
+        .layout-split #print-area { display: flex; flex-direction: column; } /* الترتيب فوق بعض */
+
+        /* إضافة خط وهمي في المعاينة فقط لفصل الاستيكرين */
+        .layout-split .single-label:first-child {
+            border-bottom: 2px dashed #cbd5e1;
+            padding-bottom: 15px;
+            margin-bottom: 5px;
+        }
+
+        /* تصغير بسيط للخطوط لتناسب الارتفاع المحدود لكل نصف */
+        .layout-split .p-name { font-size: 16pt; font-weight: 900; margin-bottom: 4px; line-height: 1.1; }
+        .layout-split .p-desc { font-size: 11pt; font-weight: 700; margin-bottom: 4px; }
+        .layout-split .p-price-box { display: inline-block; border: 2px solid black; border-radius: 6px; padding: 2px 8px; margin: 6px 0; }
+        .layout-split .p-price { font-size: 15pt; font-weight: 900; }
+        .layout-split .p-shop { font-size: 9pt; font-weight: 700; border-top: 1px dashed black; padding-top: 3px; margin-top: 3px; }
 
         /* تنسيق الحاوية البيضاء للمعاينة */
         .preview-container {
@@ -101,7 +111,7 @@
                     </div>
                     <div>
                         <h1 class="text-2xl font-black text-gray-800">حلواني بندق</h1>
-                        <p class="text-xs font-semibold text-amber-600"></p>
+                        <p class="text-xs font-semibold text-amber-600">نظام طباعة الملصقات الحرارية</p>
                     </div>
                 </div>
 
@@ -117,7 +127,7 @@
                     <select id="printerSize" class="w-full text-sm font-bold bg-white border border-gray-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer">
                         <option value="80">مقاس 8 سم (80mm)</option>
                         <option value="58">مقاس 5.8 سم (58mm)</option>
-                        <option value="split">استيكر 8 سم (مقسوم 2)</option>
+                        <option value="split">استيكر 8 سم (مقسوم بالعرض)</option>
                     </select>
                 </div>
             </div>
@@ -241,9 +251,11 @@
         };
 
         // وظيفة بناء تصميم الاستيكر الواحد
-        function buildSingleLabelHTML(name, desc, price, shop) {
+        function buildSingleLabelHTML(name, desc, price, shop, isTopLabel = false) {
+            // الكلاس print-no-border سيخفي الخط الوهمي أثناء الطباعة الفعليه
+            const addBorderClass = isTopLabel ? 'print-no-border' : '';
             return `
-                <div class="single-label">
+                <div class="single-label ${addBorderClass}">
                     <div class="p-name text-gray-900 break-words">${name || 'اسم الصنف'}</div>
                     ${desc ? `<div class="p-desc text-gray-700 break-words">${desc}</div>` : ''}
 
@@ -277,14 +289,13 @@
             if(size === '58') previewBadge.textContent = 'معاينة 5.8 سم';
             if(size === 'split') previewBadge.textContent = 'معاينة 8 سم مقسوم';
 
-            // بناء الـ HTML للاستيكر
-            const labelHTML = buildSingleLabelHTML(name, desc, price, shop);
-
-            // إذا كان الخيار مقسوم (split)، نقوم بعرض نسختين بجوار بعضهما
+            // إذا كان الخيار مقسوم (split)، نقوم بعرض نسختين فوق بعض
             if (size === 'split') {
-                printArea.innerHTML = labelHTML + labelHTML; // دمج الاستيكر مرتين
+                const topLabel = buildSingleLabelHTML(name, desc, price, shop, true);
+                const bottomLabel = buildSingleLabelHTML(name, desc, price, shop, false);
+                printArea.innerHTML = topLabel + bottomLabel;
             } else {
-                printArea.innerHTML = labelHTML; // استيكر واحد للمقاسات العادية
+                printArea.innerHTML = buildSingleLabelHTML(name, desc, price, shop); // استيكر واحد للمقاسات العادية
             }
 
             // حفظ الإعدادات في الذاكرة
@@ -348,3 +359,5 @@
 
 
 ```
+
+
