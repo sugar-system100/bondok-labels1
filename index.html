@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -79,14 +79,22 @@
         .layout-split .p-shop { font-size: 9pt; font-weight: 700; border-top: 1px dashed black; padding-top: 3px; margin-top: 3px; }
 
         /* 4. مقاس 5 سم عرض × 3.5 سم ارتفاع */
-        .layout-50x35 .preview-container { width: 190px; margin: 0 auto; } /* عرض 5 سم تقريباً بالبكسل للمعاينة */
-        .layout-50x35 .single-label { padding: 4px 2px; } /* تقليل الحواف لتناسب الارتفاع الصغير */
+        .layout-50x35 .preview-container { width: 190px; margin: 0 auto; }
+        .layout-50x35 .single-label { padding: 4px 2px; }
         .layout-50x35 .p-name { font-size: 12pt; font-weight: 900; margin-bottom: 2px; line-height: 1; }
         .layout-50x35 .p-desc { font-size: 9pt; font-weight: 700; margin-bottom: 2px; line-height: 1; }
         .layout-50x35 .p-price-box { display: inline-block; border: 1px solid black; border-radius: 4px; padding: 1px 4px; margin: 3px 0; }
         .layout-50x35 .p-price { font-size: 12pt; font-weight: 900; }
         .layout-50x35 .p-shop { font-size: 7pt; font-weight: 700; border-top: 1px dashed black; padding-top: 2px; margin-top: 2px; line-height: 1; }
 
+        /* 5. مقاس 38 مم عرض × 25.5 مم ارتفاع (المقاس الصغير جداً) */
+        .layout-38x25 .preview-container { width: 145px; margin: 0 auto; }
+        .layout-38x25 .single-label { padding: 2px 1px; }
+        .layout-38x25 .p-name { font-size: 10pt; font-weight: 900; margin-bottom: 1px; line-height: 1; }
+        .layout-38x25 .p-desc { font-size: 7pt; font-weight: 700; margin-bottom: 1px; line-height: 1; }
+        .layout-38x25 .p-price-box { display: inline-block; border: 1px solid black; border-radius: 3px; padding: 0px 3px; margin: 2px 0; }
+        .layout-38x25 .p-price { font-size: 10pt; font-weight: 900; }
+        .layout-38x25 .p-shop { font-size: 6pt; font-weight: 700; border-top: 1px dashed black; padding-top: 1px; margin-top: 1px; line-height: 1; }
 
         /* تنسيق الحاوية البيضاء للمعاينة */
         .preview-container {
@@ -131,6 +139,7 @@
                         <option value="58">مقاس 5.8 سم (58mm)</option>
                         <option value="split">استيكر 8 سم (مقسوم بالعرض)</option>
                         <option value="50x35">مقاس 5 سم × 3.5 سم</option>
+                        <option value="38x25">مقاس 38 مم × 25.5 مم</option>
                     </select>
                 </div>
             </div>
@@ -269,7 +278,7 @@
                     </div>
 
                     <div class="p-shop text-gray-800 break-words">
-                        <span class="block mb-1">حلواني بندق - اصل الطعم</span>
+                        <span class="block mb-1">حلواني بندق</span>
                         <span class="text-gray-600" style="font-size: 0.8em; font-weight: normal;">${shop || 'فرع رقم 1'}</span>
                     </div>
                 </div>
@@ -292,6 +301,7 @@
             if(size === '58') previewBadge.textContent = 'معاينة 5.8 سم';
             if(size === 'split') previewBadge.textContent = 'معاينة 8 سم مقسوم';
             if(size === '50x35') previewBadge.textContent = 'معاينة 5×3.5 سم';
+            if(size === '38x25') previewBadge.textContent = 'معاينة 38×25.5 مم';
 
             // إذا كان الخيار مقسوم (split)، نقوم بعرض نسختين فوق بعض
             if (size === 'split') {
@@ -362,4 +372,3 @@
 </html>
 
 
-```
