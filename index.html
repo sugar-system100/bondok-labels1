@@ -1,200 +1,502 @@
 <!DOCTYPE html>
+
 <html lang="ar" dir="rtl">
+
 <head>
-    <meta charset="UTF-8">
-    <title>طابعة الملصقات الحرارية</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+<meta charset="UTF-8">
 
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            width: 350px;
-        }
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #333;
-        }
+<title>طباعة استيكرات المنتجات</title>
 
-        label {
-            display: block;
-            margin: 12px 0 4px;
-            font-weight: bold;
-            font-size: 14px;
-            color: #555;
-        }
 
-        input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: 0.3s;
-        }
 
-        input:focus {
-            outline: none;
-            border-color: #4a90d9;
-        }
+<style>
 
-        .btn {
-            width: 100%;
-            padding: 12px;
-            margin-top: 20px;
-            background: #4a90d9;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+body{
 
-        .btn:hover { background: #3a7bc8; }
-        .btn:active { transform: scale(0.97); }
+    font-family: Tahoma, Arial;
 
-        .preview {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 12px;
-            color: #999;
-        }
+    padding:20px;
 
-        /* إخفاء المحتوى المراد طباعته عن الشاشة */
-        .print-area {
-            display: none;
-        }
+    background:#f5f5f5;
 
-        @media print {
-            body { visibility: hidden; background: white; }
-            .print-area {
-                visibility: visible;
-                display: block;
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 40mm;  /* عرض الملصق */
-            }
-            .sticker {
-                width: 40mm;
-                height: 20mm;
-                border: 0.5px dashed #000;
-                page-break-after: avoid;
-                overflow: hidden;
-                padding: 1mm 1.5mm;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                font-family: Arial, sans-serif;
-                margin: 0 auto;
-            }
-            .sticker + .sticker {
-                margin-top: 1mm;
-            }
-            .product-name {
-                font-size: 12pt;
-                font-weight: bold;
-                text-align: center;
-                line-height: 1.2;
-            }
-            .price-desc {
-                font-size: 8pt;
-                text-align: center;
-                line-height: 1.3;
-            }
-            .shop-name {
-                font-size: 6.5pt;
-                text-align: center;
-                margin-top: 1mm;
-            }
-        }
-    </style>
+}
+
+
+
+.container{
+
+    max-width:600px;
+
+    margin:auto;
+
+    background:#fff;
+
+    padding:20px;
+
+    border-radius:10px;
+
+}
+
+
+
+input{
+
+    width:100%;
+
+    padding:10px;
+
+    margin-bottom:10px;
+
+    box-sizing:border-box;
+
+}
+
+
+
+button{
+
+    padding:10px 15px;
+
+    cursor:pointer;
+
+    margin:5px;
+
+}
+
+
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    margin-top:15px;
+
+}
+
+
+
+th,td{
+
+    border:1px solid #ddd;
+
+    padding:8px;
+
+    text-align:center;
+
+}
+
+
+
+@media print {
+
+
+
+    body *{
+
+        visibility:hidden;
+
+    }
+
+
+
+    #printArea,
+
+    #printArea *{
+
+        visibility:visible;
+
+    }
+
+
+
+    #printArea{
+
+        position:absolute;
+
+        top:0;
+
+        right:0;
+
+        width:40mm;
+
+    }
+
+
+
+    .label{
+
+        width:40mm;
+
+        height:10mm;
+
+        box-sizing:border-box;
+
+        overflow:hidden;
+
+        page-break-after:always;
+
+
+
+        display:flex;
+
+        flex-direction:column;
+
+        justify-content:center;
+
+        align-items:center;
+
+
+
+        text-align:center;
+
+    }
+
+
+
+    .product{
+
+        font-size:10pt;
+
+        font-weight:bold;
+
+        line-height:1;
+
+    }
+
+
+
+    .price{
+
+        font-size:8pt;
+
+        font-weight:bold;
+
+        line-height:1;
+
+    }
+
+
+
+    .shop{
+
+        font-size:6pt;
+
+        line-height:1;
+
+    }
+
+}
+
+
+
+#printArea{
+
+    display:none;
+
+}
+
+</style>
+
 </head>
+
+
+
 <body>
 
-    <div class="container">
-        <h2>🖨️ طباعة ملصقات</h2>
 
-        <label>اسم المنتج</label>
-        <input type="text" id="product" placeholder="مثلاً: قهوة تركية">
 
-        <label>السعر</label>
-        <input type="text" id="price" placeholder="مثلاً: 25 ج.م">
+<div class="container">
 
-        <label>وصف المنتج</label>
-        <input type="text" id="desc" placeholder="مثلاً: 250 جرام">
 
-        <label>اسم المحل</label>
-        <input type="text" id="shop" placeholder="مثلاً: سوبر ماركت النور">
 
-        <button class="btn" onclick="printStickers()">🖨️ طباعة إستيكرين (4×2 سم)</button>
-        <div class="preview">المقاس: 40mm × 20mm للملصق | عدد 2</div>
-    </div>
+<h2>طباعة استيكرات المنتجات</h2>
 
-    <!-- محتوى الطباعة -->
-    <div class="print-area" id="printArea">
-        <div class="sticker">
-            <div class="product-name" id="stickerProduct1"></div>
-            <div class="price-desc" id="stickerPriceDesc1"></div>
-            <div class="shop-name" id="stickerShop1"></div>
-        </div>
-        <div class="sticker">
-            <div class="product-name" id="stickerProduct2"></div>
-            <div class="price-desc" id="stickerPriceDesc2"></div>
-            <div class="shop-name" id="stickerShop2"></div>
-        </div>
-    </div>
 
-    <script>
-        function printStickers() {
-            const product = document.getElementById('product').value.trim();
-            const price = document.getElementById('price').value.trim();
-            const desc = document.getElementById('desc').value.trim();
-            const shop = document.getElementById('shop').value.trim();
 
-            if (!product || !price || !shop) {
-                alert('يرجى ملء اسم المنتج، السعر، واسم المحل على الأقل.');
-                return;
-            }
+<input type="text" id="product" placeholder="اسم المنتج">
 
-            const priceDescText = desc ? `${price}  -  ${desc}` : price;
 
-            // تعبئة الإستيكرين
-            document.getElementById('stickerProduct1').textContent = product;
-            document.getElementById('stickerPriceDesc1').textContent = priceDescText;
-            document.getElementById('stickerShop1').textContent = shop;
 
-            document.getElementById('stickerProduct2').textContent = product;
-            document.getElementById('stickerPriceDesc2').textContent = priceDescText;
-            document.getElementById('stickerShop2').textContent = shop;
+<input type="text" id="price" placeholder="السعر">
 
-            // أمر الطباعة
-            window.print();
+
+
+<input type="number" id="copies" placeholder="عدد النسخ" value="1">
+
+
+
+<button onclick="addProduct()">إضافة</button>
+
+
+
+<button onclick="printLabels()">طباعة</button>
+
+
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>المنتج</th>
+
+<th>السعر</th>
+
+<th>النسخ</th>
+
+<th>حذف</th>
+
+</tr>
+
+</thead>
+
+
+
+<tbody id="tableBody"></tbody>
+
+
+
+</table>
+
+
+
+</div>
+
+
+
+<div id="printArea"></div>
+
+
+
+<script>
+
+
+
+let products = JSON.parse(localStorage.getItem("products") || "[]");
+
+
+
+function save(){
+
+    localStorage.setItem("products", JSON.stringify(products));
+
+}
+
+
+
+function render(){
+
+
+
+    let html = "";
+
+
+
+    products.forEach((p,index)=>{
+
+
+
+        html += `
+
+        <tr>
+
+            <td>${p.name}</td>
+
+            <td>${p.price}</td>
+
+            <td>${p.copies}</td>
+
+            <td>
+
+                <button onclick="removeProduct(${index})">
+
+                    حذف
+
+                </button>
+
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+
+
+    document.getElementById("tableBody").innerHTML = html;
+
+}
+
+
+
+function addProduct(){
+
+
+
+    const name =
+
+    document.getElementById("product").value.trim();
+
+
+
+    const price =
+
+    document.getElementById("price").value.trim();
+
+
+
+    const copies =
+
+    parseInt(document.getElementById("copies").value || 1);
+
+
+
+    if(!name || !price){
+
+        alert("أدخل اسم المنتج والسعر");
+
+        return;
+
+    }
+
+
+
+    products.push({
+
+        name,
+
+        price,
+
+        copies
+
+    });
+
+
+
+    save();
+
+    render();
+
+
+
+    document.getElementById("product").value="";
+
+    document.getElementById("price").value="";
+
+    document.getElementById("copies").value="1";
+
+}
+
+
+
+function removeProduct(index){
+
+
+
+    products.splice(index,1);
+
+
+
+    save();
+
+    render();
+
+}
+
+
+
+function printLabels(){
+
+
+
+    let html = "";
+
+
+
+    products.forEach(product=>{
+
+
+
+        for(let i=0;i<product.copies;i++){
+
+
+
+            html += `
+
+            <div class="label">
+
+
+
+                <div class="product">
+
+                    ${product.name}
+
+                </div>
+
+
+
+                <div class="price">
+
+                    ${product.price} ج
+
+                </div>
+
+
+
+                <div class="shop">
+
+                    حلويات بندق
+
+                </div>
+
+
+
+            </div>
+
+            `;
+
         }
 
-        // دعم اختصار Ctrl+P للطباعة مباشرة من الصفحة أيضاً
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'p') {
-                e.preventDefault();
-                printStickers();
-            }
-        });
-    </script>
+
+
+    });
+
+
+
+    document.getElementById("printArea").innerHTML = html;
+
+
+
+    document.getElementById("printArea").style.display="block";
+
+
+
+    window.print();
+
+
+
+    document.getElementById("printArea").style.display="none";
+
+}
+
+
+
+render();
+
+
+
+</script>
+
+
 
 </body>
+
 </html>
+
