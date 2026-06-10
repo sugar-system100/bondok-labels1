@@ -3,605 +3,427 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>حلواني بندق | ليبل مزدوج - حل مشكلة الصفحات المتعددة</title>
+    <title>حلواني بندق | طباعة ليبل مزدوج 4×1 سم (صفحة واحدة فقط)</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             font-family: 'Cairo', sans-serif;
         }
         body {
-            background: #fff9ef;
+            background: #f5f0e1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
-
-        /* ---------- إعدادات الطباعة الحاسمة ---------- */
+        .control-panel {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.1);
+            padding: 24px;
+            border: 1px solid #f3d382;
+        }
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: #4a2e00;
+            border-right: 5px solid #f59e0b;
+            padding-right: 12px;
+            margin-bottom: 20px;
+        }
+        .field-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #b45309;
+            margin-bottom: 4px;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .sync-toggle {
+            background: #fff7ed;
+            border-radius: 20px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #f59e0b;
+            color: white;
+            font-weight: 900;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 8px;
+        }
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .preview {
+            background: #fef9e6;
+            border-radius: 20px;
+            padding: 16px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .preview-card {
+            background: white;
+            border-radius: 12px;
+            padding: 8px;
+            max-width: 240px;
+            margin: 0 auto;
+        }
+        .preview-sticker {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 8px;
+            border-bottom: 1px dashed #ccc;
+        }
+        .preview-sticker:last-child {
+            border-bottom: none;
+        }
+        .preview-price {
+            border: 1.5px solid black;
+            border-radius: 8px;
+            padding: 2px 8px;
+            text-align: center;
+            font-weight: 900;
+            min-width: 55px;
+        }
+        /* طباعة صفحة واحدة فقط */
         @media print {
-            /* إخفاء كل شيء إلا منطقة الطباعة */
             body * {
                 visibility: hidden;
             }
-
-            #printOnly, #printOnly * {
+            #print-area, #print-area * {
                 visibility: visible;
             }
-
-            #printOnly {
+            #print-area {
                 position: fixed;
                 top: 0;
                 left: 0;
-                right: 0;
-                bottom: 0;
+                width: 40mm;
+                height: 20mm;
                 margin: 0;
                 padding: 0;
                 background: white;
                 direction: rtl;
                 display: flex;
                 flex-direction: column;
-                justify-content: center;
-                align-items: center;
             }
-
-            /* إلغاء أي هوامش أو حجم ثابت - نترك الحجم للطابعة */
             @page {
-                size: auto;
+                size: 40mm 20mm;
                 margin: 0mm;
             }
-
-            /* حاوية الملصقين (ارتفاعها الإجمالي 20mm) */
-            .sticker-pair {
-                width: 100%;
-                max-width: 58mm;  /* سيتم التحكم به عبر JS */
-                background: white;
-                display: flex;
-                flex-direction: column;
-                margin: 0 auto;
-            }
-
-            /* الملصق الواحد ارتفاع 10mm */
-            .single-sticker {
-                width: 100%;
+            .print-sticker {
+                width: 40mm;
                 height: 10mm;
                 display: flex;
-                flex-direction: row;
                 align-items: center;
                 justify-content: space-between;
-                box-sizing: border-box;
                 padding: 0 1.5mm;
-                background: white;
-                page-break-inside: avoid;
-                break-inside: avoid;
+                box-sizing: border-box;
             }
-
-            .top-sticker-print {
-                border-bottom: 0.5mm dashed #aaa;
+            .print-sticker:first-child {
+                border-bottom: 0.3mm dashed #aaa;
             }
-
-            .price-area {
+            .print-name {
+                font-weight: 900;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .print-footer {
+                font-weight: bold;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .print-price-box {
                 border: 0.8pt solid black;
-                border-radius: 1.5mm;
+                border-radius: 2mm;
                 width: 12mm;
                 height: 8mm;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                background: white;
-            }
-
-            .sticker-name {
-                font-weight: 900;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            .sticker-footer {
-                font-weight: bold;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            .price-number {
-                font-weight: 900;
-                line-height: 1;
-            }
-
-            .currency-symbol {
-                font-size: 5pt;
-                font-weight: 900;
             }
         }
-
-        /* المعاينة على الشاشة فقط */
-        .preview-sticker {
-            background: white;
-            border-radius: 8px;
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
         }
-        .preview-split {
-            height: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
         }
-        .sim-card {
-            background: #fcf3da;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        input:checked + .slider {
+            background-color: #f59e0b;
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body>
+<div class="control-panel">
+    <h1>🍬 حلواني بندق<br><span style="font-size: 0.9rem;">ليبل مزدوج 4×1 سم (إجمالي 4×2 سم)</span></h1>
+    <div class="sync-toggle">
+        <span class="font-bold text-sm">🔄 مزامنة البيانات (تعبئة تلقائية للسفلي)</span>
+        <label class="switch">
+            <input type="checkbox" id="syncCheckbox" checked>
+            <span class="slider round"></span>
+        </label>
+    </div>
 
-    <div class="w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-amber-200 flex flex-col lg:flex-row">
+    <div class="field-group">
+        <label>📦 المنتج (القطعة العلوية)</label>
+        <input type="text" id="topName" value="علبة قراقيش عجوة">
+    </div>
+    <div class="field-group">
+        <label>💰 السعر (ج.م)</label>
+        <input type="number" id="topPrice" value="150">
+    </div>
 
-        <!-- قسم التحكم -->
-        <div class="w-full lg:w-1/2 p-6 space-y-5 no-print border-l border-amber-100">
-            <div class="flex items-center gap-3 pb-3 border-b border-amber-200">
-                <div class="bg-amber-100 p-2 rounded-xl text-amber-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                    </svg>
-                </div>
+    <div id="bottomSection" class="field-group" style="opacity: 0.6;">
+        <label>📦 المنتج (القطعة السفلية)</label>
+        <input type="text" id="bottomName" value="علبة قراقيش عجوة" disabled>
+    </div>
+    <div id="bottomPriceSection" class="field-group" style="opacity: 0.6;">
+        <label>💰 السعر (ج.م)</label>
+        <input type="number" id="bottomPrice" value="150" disabled>
+    </div>
+
+    <div class="field-group">
+        <label>🏷️ نص التذييل (فرع)</label>
+        <input type="text" id="footerText" value="حلواني بندق - فرع 1">
+    </div>
+
+    <div class="field-group">
+        <label>🔠 حجم خط الاسم (pt)</label>
+        <input type="range" id="nameFontSize" min="7" max="14" value="10">
+        <span id="nameFontValue">10pt</span>
+    </div>
+    <div class="field-group">
+        <label>💲 حجم خط السعر (pt)</label>
+        <input type="range" id="priceFontSize" min="9" max="18" value="13">
+        <span id="priceFontValue">13pt</span>
+    </div>
+
+    <div style="display: flex; gap: 12px; margin-top: 8px;">
+        <button id="printBtn">🖨️ طباعة (صفحة واحدة فقط)</button>
+        <button id="clearBtn" class="btn-secondary">🗑️ مسح</button>
+    </div>
+
+    <div class="preview">
+        <div class="preview-card">
+            <div class="preview-sticker">
                 <div>
-                    <h1 class="text-2xl font-black text-gray-800">حلواني بندق <span class="text-amber-600">ليبل مزدوج</span></h1>
-                    <p class="text-[11px] text-gray-500">طباعة ملصقين متصلين (تم إصلاح مشكلة الصفحات المتعددة)</p>
+                    <div id="previewTopName" style="font-weight:900;">علبة قراقيش عجوة</div>
+                    <div id="previewTopFooter" style="font-size:9px;">حلواني بندق - فرع 1</div>
                 </div>
+                <div class="preview-price"><span id="previewTopPrice">150</span><br><span style="font-size:8px;">ج.م</span></div>
             </div>
-
-            <!-- إعدادات العرض المنقذة -->
-            <div class="bg-amber-50 p-3 rounded-xl flex flex-wrap gap-3 items-center justify-between border border-amber-200">
+            <div class="preview-sticker">
                 <div>
-                    <p class="text-sm font-black text-amber-800">📏 عرض ورق الطابعة</p>
-                    <p class="text-[10px] text-amber-700">اختر المقاس الصحيح لطابعتي</p>
+                    <div id="previewBottomName" style="font-weight:900;">علبة قراقيش عجوة</div>
+                    <div id="previewBottomFooter" style="font-size:9px;">حلواني بندق - فرع 1</div>
                 </div>
-                <div class="flex gap-4">
-                    <label class="flex items-center gap-1 font-bold text-sm">
-                        <input type="radio" name="paperWidth" value="58" checked> 58 مم
-                    </label>
-                    <label class="flex items-center gap-1 font-bold text-sm">
-                        <input type="radio" name="paperWidth" value="40"> 40 مم
-                    </label>
-                </div>
-            </div>
-
-            <!-- التكرار التلقائي -->
-            <div class="bg-gray-50 p-3 rounded-xl flex items-center justify-between">
-                <span class="font-bold text-gray-700">تكرار البيانات على الملصقين</span>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" id="syncCheck" class="sr-only peer" checked>
-                    <div class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-amber-500 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
-                </label>
-            </div>
-
-            <!-- بيانات الملصق العلوي -->
-            <div class="bg-gray-50/70 p-4 rounded-xl space-y-2">
-                <div class="text-xs font-black text-amber-700">الملصق العلوي</div>
-                <div class="grid grid-cols-3 gap-2">
-                    <div class="col-span-2">
-                        <input type="text" id="topName" value="علبة قراقيش عجوة" placeholder="اسم المنتج" class="w-full border rounded-lg p-2 text-sm font-bold">
-                    </div>
-                    <div>
-                        <input type="number" id="topPrice" value="150" placeholder="السعر" class="w-full border rounded-lg p-2 text-center font-black">
-                    </div>
-                </div>
-            </div>
-
-            <!-- بيانات الملصق السفلي -->
-            <div id="bottomBox" class="bg-gray-50/70 p-4 rounded-xl space-y-2 opacity-70">
-                <div class="text-xs font-black text-amber-700">الملصق السفلي</div>
-                <div class="grid grid-cols-3 gap-2">
-                    <div class="col-span-2">
-                        <input type="text" id="bottomName" value="علبة قراقيش عجوة" disabled class="w-full bg-gray-100 border rounded-lg p-2 text-sm font-bold">
-                    </div>
-                    <div>
-                        <input type="number" id="bottomPrice" value="150" disabled class="w-full bg-gray-100 border rounded-lg p-2 text-center font-black">
-                    </div>
-                </div>
-            </div>
-
-            <!-- تذييل -->
-            <div>
-                <label class="block text-xs font-bold mb-1">نص التذييل (الفرع)</label>
-                <input type="text" id="footerText" value="حلواني بندق - فرع 1" class="w-full border rounded-xl p-2.5 text-sm font-bold">
-            </div>
-
-            <!-- تحكم الخطوط -->
-            <div class="border-t pt-3">
-                <p class="text-xs font-black mb-2">🎛️ ضبط حجم الخط للطباعة</p>
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                    <div class="flex items-center justify-between">
-                        <span>اسم الصنف:</span>
-                        <input type="range" id="nameSize" min="8" max="15" value="10" class="w-28 accent-amber-500">
-                        <span id="nameVal" class="w-8">10pt</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span>السعر:</span>
-                        <input type="range" id="priceSize" min="10" max="19" value="13" class="w-28 accent-amber-500">
-                        <span id="priceVal" class="w-8">13pt</span>
-                    </div>
-                    <div class="flex items-center justify-between col-span-2">
-                        <span>التذييل:</span>
-                        <input type="range" id="footerSize" min="5" max="9" value="6" class="w-28 accent-amber-500">
-                        <span id="footerVal" class="w-8">6pt</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- الأزرار -->
-            <div class="flex gap-3 pt-2">
-                <button id="printAction" class="flex-1 bg-amber-600 text-white font-black py-3 rounded-xl shadow-lg flex justify-center gap-2">
-                    🖨️ طباعة (صفحة واحدة)
-                </button>
-                <button id="clearAction" class="px-5 bg-gray-100 font-bold rounded-xl">مسح</button>
-            </div>
-
-            <!-- تعليمات مهمة -->
-            <div class="bg-red-50 p-3 rounded-lg text-[11px] text-red-800 border-r-4 border-red-500">
-                ⚠️ <span class="font-bold">إعدادات الطباعة الإلزامية:</span><br>
-                • الهامش: <strong>بلا (None)</strong><br>
-                • المقياس: <strong>افتراضي (100%)</strong><br>
-                • حجم الورق: اختر <strong>"58×20 مم"</strong> أو "Custom" ثم أدخل 58 عرض و20 ارتفاع<br>
-                • إذا ظهرت أكثر من صفحة، تأكد من اختيار "ملاءمة للصفحة" = لا
+                <div class="preview-price"><span id="previewBottomPrice">150</span><br><span style="font-size:8px;">ج.م</span></div>
             </div>
         </div>
+        <p class="text-sm" style="font-size:0.7rem; margin-top:8px;">* معاينة تقريبية – الطباعة ستكون ورقة واحدة فقط (40×20 مم) تحتوي على الملصقين معاً</p>
+    </div>
+</div>
 
-        <!-- المعاينة الحية -->
-        <div class="w-full lg:w-1/2 bg-amber-50/30 p-6 flex flex-col items-center justify-center no-print">
-            <p class="text-xs font-bold text-amber-700 mb-2">معاينة مباشرة (حسب عرض الورق المختار)</p>
-            <div id="previewSim" class="sim-card p-4 w-full max-w-sm">
-                <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                    <div class="preview-sticker">
-                        <div class="flex-1 overflow-hidden pl-1">
-                            <div id="previewTopName" class="font-black truncate">علبة قراقيش عجوة</div>
-                            <div id="previewTopFooter" class="text-gray-500 text-[9px] font-bold truncate">حلواني بندق - فرع 1</div>
-                        </div>
-                        <div class="border-2 border-black rounded-xl px-2 py-1 text-center min-w-[55px]">
-                            <span id="previewTopPrice" class="font-black block">150</span>
-                            <span class="text-[8px] font-black">ج.م</span>
-                        </div>
-                    </div>
-                    <div class="preview-split"><span class="border-t border-dashed w-2/3"></span></div>
-                    <div class="preview-sticker">
-                        <div class="flex-1 overflow-hidden pl-1">
-                            <div id="previewBottomName" class="font-black truncate">علبة قراقيش عجوة</div>
-                            <div id="previewBottomFooter" class="text-gray-500 text-[9px] font-bold truncate">حلواني بندق - فرع 1</div>
-                        </div>
-                        <div class="border-2 border-black rounded-xl px-2 py-1 text-center min-w-[55px]">
-                            <span id="previewBottomPrice" class="font-black block">150</span>
-                            <span class="text-[8px] font-black">ج.م</span>
-                        </div>
-                    </div>
-                </div>
-                <p class="text-[9px] text-center text-gray-400 mt-3">ارتفاع كل ملصق 10 مم، إجمالي 20 مم. لن يزيد عن صفحة واحدة</p>
-            </div>
+<div id="print-area" style="display: none;">
+    <div class="print-sticker">
+        <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+            <div class="print-name" id="printTopName">علبة قراقيش عجوة</div>
+            <div class="print-footer" id="printTopFooter">حلواني بندق - فرع 1</div>
+        </div>
+        <div class="print-price-box">
+            <span class="print-name" id="printTopPrice" style="font-size:13pt;">150</span>
+            <span style="font-size:5pt;">ج.م</span>
         </div>
     </div>
-
-    <!-- منطقة الطباعة الوحيدة (لن تظهر إلا عند الطباعة) -->
-    <div id="printOnly" style="display: none; visibility: hidden;">
-        <div id="printPair" class="sticker-pair">
-            <!-- سيتم ملؤها بواسطة JS ديناميكياً مع كل طباعة -->
+    <div class="print-sticker">
+        <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+            <div class="print-name" id="printBottomName">علبة قراقيش عجوة</div>
+            <div class="print-footer" id="printBottomFooter">حلواني بندق - فرع 1</div>
+        </div>
+        <div class="print-price-box">
+            <span class="print-name" id="printBottomPrice" style="font-size:13pt;">150</span>
+            <span style="font-size:5pt;">ج.م</span>
         </div>
     </div>
+</div>
 
-    <div class="no-print text-center text-[10px] text-gray-400 py-3 mt-2">
-        © حلواني بندق | تطوير م/ محمود سلامه (تم إصلاح تعدد الصفحات نهائياً)
-    </div>
+<script>
+    const topName = document.getElementById('topName');
+    const topPrice = document.getElementById('topPrice');
+    const bottomName = document.getElementById('bottomName');
+    const bottomPrice = document.getElementById('bottomPrice');
+    const footer = document.getElementById('footerText');
+    const syncCheck = document.getElementById('syncCheckbox');
+    const previewTopName = document.getElementById('previewTopName');
+    const previewTopPrice = document.getElementById('previewTopPrice');
+    const previewTopFooter = document.getElementById('previewTopFooter');
+    const previewBottomName = document.getElementById('previewBottomName');
+    const previewBottomPrice = document.getElementById('previewBottomPrice');
+    const previewBottomFooter = document.getElementById('previewBottomFooter');
+    const printTopName = document.getElementById('printTopName');
+    const printTopPrice = document.getElementById('printTopPrice');
+    const printTopFooter = document.getElementById('printTopFooter');
+    const printBottomName = document.getElementById('printBottomName');
+    const printBottomPrice = document.getElementById('printBottomPrice');
+    const printBottomFooter = document.getElementById('printBottomFooter');
+    const nameSlider = document.getElementById('nameFontSize');
+    const priceSlider = document.getElementById('priceFontSize');
+    const nameVal = document.getElementById('nameFontValue');
+    const priceVal = document.getElementById('priceFontValue');
+    const bottomSection = document.getElementById('bottomSection');
+    const bottomPriceSection = document.getElementById('bottomPriceSection');
 
-    <script>
-        // عناصر الإدخال
-        const topNameInp = document.getElementById('topName');
-        const topPriceInp = document.getElementById('topPrice');
-        const bottomNameInp = document.getElementById('bottomName');
-        const bottomPriceInp = document.getElementById('bottomPrice');
-        const footerInp = document.getElementById('footerText');
-        const syncChk = document.getElementById('syncCheck');
-        const bottomBox = document.getElementById('bottomBox');
+    let isSync = true;
 
-        // المعاينة
-        const previewTopName = document.getElementById('previewTopName');
-        const previewTopPrice = document.getElementById('previewTopPrice');
-        const previewTopFooter = document.getElementById('previewTopFooter');
-        const previewBottomName = document.getElementById('previewBottomName');
-        const previewBottomPrice = document.getElementById('previewBottomPrice');
-        const previewBottomFooter = document.getElementById('previewBottomFooter');
-
-        // السلايدرات
-        const nameSlider = document.getElementById('nameSize');
-        const priceSlider = document.getElementById('priceSize');
-        const footerSlider = document.getElementById('footerSize');
-        const nameVal = document.getElementById('nameVal');
-        const priceVal = document.getElementById('priceVal');
-        const footerVal = document.getElementById('footerVal');
-
-        // راديو عرض الورق
-        const radio58 = document.querySelector('input[value="58"]');
-        const radio40 = document.querySelector('input[value="40"]');
-
-        let isSync = true;
-        let currentWidth = 58; // مم
-
-        // تحديث كل المعاينات وبيانات الطباعة
-        function refreshPreview() {
-            let topName = topNameInp.value.trim() || "منتج";
-            let topPrice = topPriceInp.value || "0";
-            let footer = footerInp.value.trim() || "حلواني بندق";
-
-            if (isSync) {
-                bottomNameInp.value = topName;
-                bottomPriceInp.value = topPrice;
-                bottomNameInp.disabled = true;
-                bottomPriceInp.disabled = true;
-                bottomBox.classList.add('opacity-70');
-            } else {
-                bottomNameInp.disabled = false;
-                bottomPriceInp.disabled = false;
-                bottomBox.classList.remove('opacity-70');
-            }
-
-            let bottomName = bottomNameInp.value.trim() || "منتج";
-            let bottomPrice = bottomPriceInp.value || "0";
-
-            // تحديث المعاينة
-            previewTopName.innerText = topName;
-            previewTopPrice.innerText = topPrice;
-            previewTopFooter.innerText = footer;
-            previewBottomName.innerText = bottomName;
-            previewBottomPrice.innerText = bottomPrice;
-            previewBottomFooter.innerText = footer;
-
-            // حفظ مؤقت
-            localStorage.setItem('savedTopName', topName);
-            localStorage.setItem('savedTopPrice', topPrice);
-            localStorage.setItem('savedFooter', footer);
-            if (!isSync) {
-                localStorage.setItem('savedBottomName', bottomName);
-                localStorage.setItem('savedBottomPrice', bottomPrice);
-            }
+    function updateAll() {
+        let tName = topName.value.trim() || "منتج";
+        let tPrice = topPrice.value || "0";
+        let foot = footer.value.trim() || "حلواني بندق";
+        if (isSync) {
+            bottomName.value = tName;
+            bottomPrice.value = tPrice;
+            bottomName.disabled = true;
+            bottomPrice.disabled = true;
+            bottomSection.style.opacity = "0.6";
+            bottomPriceSection.style.opacity = "0.6";
+        } else {
+            bottomName.disabled = false;
+            bottomPrice.disabled = false;
+            bottomSection.style.opacity = "1";
+            bottomPriceSection.style.opacity = "1";
         }
+        let bName = bottomName.value.trim() || "منتج";
+        let bPrice = bottomPrice.value || "0";
+        previewTopName.innerText = tName;
+        previewTopPrice.innerText = tPrice;
+        previewTopFooter.innerText = foot;
+        previewBottomName.innerText = bName;
+        previewBottomPrice.innerText = bPrice;
+        previewBottomFooter.innerText = foot;
+        printTopName.innerText = tName;
+        printTopPrice.innerText = tPrice;
+        printTopFooter.innerText = foot;
+        printBottomName.innerText = bName;
+        printBottomPrice.innerText = bPrice;
+        printBottomFooter.innerText = foot;
+        localStorage.setItem('topName', tName);
+        localStorage.setItem('topPrice', tPrice);
+        localStorage.setItem('footer', foot);
+    }
 
-        // تحديث حجم الخطوط (للمعاينة والطباعة)
-        function applyFontSizes() {
-            let nameSize = nameSlider.value;
-            let priceSize = priceSlider.value;
-            let footerSize = footerSlider.value;
+    function updateFonts() {
+        let nameSize = nameSlider.value;
+        let priceSize = priceSlider.value;
+        nameVal.innerText = nameSize + "pt";
+        priceVal.innerText = priceSize + "pt";
+        printTopName.style.fontSize = nameSize + 'pt';
+        printBottomName.style.fontSize = nameSize + 'pt';
+        printTopPrice.style.fontSize = priceSize + 'pt';
+        printBottomPrice.style.fontSize = priceSize + 'pt';
+        previewTopName.style.fontSize = (parseInt(nameSize)*1.2)+'px';
+        previewBottomName.style.fontSize = (parseInt(nameSize)*1.2)+'px';
+        localStorage.setItem('nameSize', nameSize);
+        localStorage.setItem('priceSize', priceSize);
+    }
 
-            nameVal.innerText = nameSize + 'pt';
-            priceVal.innerText = priceSize + 'pt';
-            footerVal.innerText = footerSize + 'pt';
+    function printOnce() {
+        if (!topName.value.trim()) { alert("أدخل اسم المنتج العلوي"); topName.focus(); return; }
+        if (!topPrice.value.trim() || parseFloat(topPrice.value)<=0) { alert("السعر العلوي غير صحيح"); topPrice.focus(); return; }
+        if (!isSync && (!bottomName.value.trim() || parseFloat(bottomPrice.value)<=0)) { alert("املأ البيانات السفلية أو فعّل المزامنة"); return; }
+        updateAll();
+        updateFonts();
+        const printArea = document.getElementById('print-area');
+        printArea.style.display = 'flex';
+        setTimeout(() => {
+            window.print();
+            setTimeout(() => { printArea.style.display = 'none'; }, 500);
+        }, 50);
+    }
 
-            // المعاينة
-            previewTopName.style.fontSize = (parseInt(nameSize) * 1.1) + 'px';
-            previewBottomName.style.fontSize = (parseInt(nameSize) * 1.1) + 'px';
-            previewTopPrice.style.fontSize = (parseInt(priceSize) * 1.2) + 'px';
-            previewBottomPrice.style.fontSize = (parseInt(priceSize) * 1.2) + 'px';
-            previewTopFooter.style.fontSize = (parseInt(footerSize) * 1.2) + 'px';
-            previewBottomFooter.style.fontSize = (parseInt(footerSize) * 1.2) + 'px';
+    function clearAll() {
+        topName.value = ''; topPrice.value = '';
+        if (!isSync) { bottomName.value = ''; bottomPrice.value = ''; }
+        footer.value = 'حلواني بندق - فرع 1';
+        updateAll();
+        topName.focus();
+    }
 
-            localStorage.setItem('fontName', nameSize);
-            localStorage.setItem('fontPrice', priceSize);
-            localStorage.setItem('fontFooter', footerSize);
-        }
+    topName.addEventListener('input', () => { if (isSync) bottomName.value = topName.value; updateAll(); });
+    topPrice.addEventListener('input', () => { if (isSync) bottomPrice.value = topPrice.value; updateAll(); });
+    bottomName.addEventListener('input', updateAll);
+    bottomPrice.addEventListener('input', updateAll);
+    footer.addEventListener('input', updateAll);
+    syncCheck.addEventListener('change', (e) => { isSync = e.target.checked; if(isSync) { bottomName.value = topName.value; bottomPrice.value = topPrice.value; } updateAll(); });
+    nameSlider.addEventListener('input', updateFonts);
+    priceSlider.addEventListener('input', updateFonts);
+    document.getElementById('printBtn').addEventListener('click', printOnce);
+    document.getElementById('clearBtn').addEventListener('click', clearAll);
 
-        // إعادة بناء منطقة الطباعة ديناميكياً (لضمان صفحة واحدة)
-        function buildPrintContent() {
-            let topName = topNameInp.value.trim() || "منتج";
-            let topPrice = topPriceInp.value || "0";
-            let footer = footerInp.value.trim() || "حلواني بندق";
-            let bottomName = bottomNameInp.value.trim() || "منتج";
-            let bottomPrice = bottomPriceInp.value || "0";
-
-            let nameSizePt = nameSlider.value + 'pt';
-            let priceSizePt = priceSlider.value + 'pt';
-            let footerSizePt = footerSlider.value + 'pt';
-
-            // بناء هيكل الطباعة
-            const container = document.getElementById('printPair');
-            container.className = 'sticker-pair';
-            container.style.maxWidth = currentWidth + 'mm';
-            container.innerHTML = `
-                <div class="single-sticker top-sticker-print" style="max-width: ${currentWidth}mm;">
-                    <div style="flex:1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; padding-left: 1.5mm;">
-                        <div class="sticker-name" style="font-size: ${nameSizePt};">${escapeHtml(topName)}</div>
-                        <div class="sticker-footer" style="font-size: ${footerSizePt};">${escapeHtml(footer)}</div>
-                    </div>
-                    <div class="price-area">
-                        <span class="price-number" style="font-size: ${priceSizePt};">${topPrice}</span>
-                        <span class="currency-symbol">ج.م</span>
-                    </div>
-                </div>
-                <div class="single-sticker" style="max-width: ${currentWidth}mm;">
-                    <div style="flex:1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; padding-left: 1.5mm;">
-                        <div class="sticker-name" style="font-size: ${nameSizePt};">${escapeHtml(bottomName)}</div>
-                        <div class="sticker-footer" style="font-size: ${footerSizePt};">${escapeHtml(footer)}</div>
-                    </div>
-                    <div class="price-area">
-                        <span class="price-number" style="font-size: ${priceSizePt};">${bottomPrice}</span>
-                        <span class="currency-symbol">ج.م</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        // دالة بسيطة لتنظيف النص
-        function escapeHtml(str) {
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
-        }
-
-        // تغيير عرض الورق وتحديث المعاينة
-        function updatePaperWidth() {
-            if (radio58.checked) currentWidth = 58;
-            else currentWidth = 40;
-
-            // تحديث حجم حاوية المعاينة بشكل بسيط
-            const simDiv = document.getElementById('previewSim');
-            if (currentWidth === 58) {
-                simDiv.style.maxWidth = '260px';
-            } else {
-                simDiv.style.maxWidth = '200px';
-            }
-            // إعادة بناء الطباعة عند التبديل
-            buildPrintContent();
-        }
-
-        // وظيفة الطباعة الأساسية (تضمن صفحة واحدة)
-        function performPrint() {
-            // التحقق من البيانات
-            if (!topNameInp.value.trim()) {
-                alert('يرجى كتابة اسم الصنف العلوي');
-                topNameInp.focus();
-                return;
-            }
-            if (!topPriceInp.value.trim() || parseFloat(topPriceInp.value) <= 0) {
-                alert('السعر العلوي غير صحيح');
-                topPriceInp.focus();
-                return;
-            }
-            if (!isSync) {
-                if (!bottomNameInp.value.trim()) {
-                    alert('يرجى كتابة اسم الصنف السفلي أو تفعيل التكرار');
-                    bottomNameInp.focus();
-                    return;
-                }
-                if (!bottomPriceInp.value.trim() || parseFloat(bottomPriceInp.value) <= 0) {
-                    alert('السعر السفلي غير صحيح');
-                    bottomPriceInp.focus();
-                    return;
-                }
-            }
-
-            // تحديث البيانات
-            refreshPreview();
-            applyFontSizes();
-            buildPrintContent();
-
-            // إظهار منطقة الطباعة
-            const printZone = document.getElementById('printOnly');
-            printZone.style.display = 'flex';
-            printZone.style.visibility = 'visible';
-
-            // تأخير بسيط ثم طباعة
-            setTimeout(() => {
-                window.print();
-                setTimeout(() => {
-                    printZone.style.display = 'none';
-                    printZone.style.visibility = 'hidden';
-                }, 300);
-            }, 50);
-        }
-
-        // تفريغ الحقول
-        function clearFields() {
-            topNameInp.value = '';
-            topPriceInp.value = '';
-            if (!isSync) {
-                bottomNameInp.value = '';
-                bottomPriceInp.value = '';
-            }
-            footerInp.value = 'حلواني بندق - فرع 1';
-            refreshPreview();
-            topNameInp.focus();
-        }
-
-        // الأحداث
-        topNameInp.addEventListener('input', () => {
-            if (isSync) bottomNameInp.value = topNameInp.value;
-            refreshPreview();
-        });
-        topPriceInp.addEventListener('input', () => {
-            if (isSync) bottomPriceInp.value = topPriceInp.value;
-            refreshPreview();
-        });
-        bottomNameInp.addEventListener('input', refreshPreview);
-        bottomPriceInp.addEventListener('input', refreshPreview);
-        footerInp.addEventListener('input', refreshPreview);
-
-        syncChk.addEventListener('change', (e) => {
-            isSync = e.target.checked;
-            if (isSync) {
-                bottomNameInp.value = topNameInp.value;
-                bottomPriceInp.value = topPriceInp.value;
-            }
-            refreshPreview();
-        });
-
-        nameSlider.addEventListener('input', () => {
-            applyFontSizes();
-            buildPrintContent();
-        });
-        priceSlider.addEventListener('input', () => {
-            applyFontSizes();
-            buildPrintContent();
-        });
-        footerSlider.addEventListener('input', () => {
-            applyFontSizes();
-            buildPrintContent();
-        });
-
-        radio58.addEventListener('change', () => {
-            updatePaperWidth();
-            refreshPreview();
-        });
-        radio40.addEventListener('change', () => {
-            updatePaperWidth();
-            refreshPreview();
-        });
-
-        document.getElementById('printAction').addEventListener('click', performPrint);
-        document.getElementById('clearAction').addEventListener('click', clearFields);
-
-        // استعادة الإعدادات المخزنة
-        function loadStored() {
-            const savedTopName = localStorage.getItem('savedTopName');
-            if (savedTopName) topNameInp.value = savedTopName;
-            const savedTopPrice = localStorage.getItem('savedTopPrice');
-            if (savedTopPrice) topPriceInp.value = savedTopPrice;
-            const savedFooter = localStorage.getItem('savedFooter');
-            if (savedFooter) footerInp.value = savedFooter;
-
-            const fn = localStorage.getItem('fontName');
-            const fp = localStorage.getItem('fontPrice');
-            const ff = localStorage.getItem('fontFooter');
-            if (fn) nameSlider.value = fn;
-            if (fp) priceSlider.value = fp;
-            if (ff) footerSlider.value = ff;
-
-            isSync = true;
-            syncChk.checked = true;
-            bottomNameInp.disabled = true;
-            bottomPriceInp.disabled = true;
-            bottomBox.classList.add('opacity-70');
-
-            updatePaperWidth();
-            applyFontSizes();
-            refreshPreview();
-            buildPrintContent();
-        }
-
-        loadStored();
-
-        // للتأكد من أن الطباعة لا تسبب صفحات إضافية
-        window.onbeforeprint = () => {
-            buildPrintContent();
-            const printZone = document.getElementById('printOnly');
-            printZone.style.display = 'flex';
-            printZone.style.visibility = 'visible';
-        };
-        window.onafterprint = () => {
-            const printZone = document.getElementById('printOnly');
-            printZone.style.display = 'none';
-            printZone.style.visibility = 'hidden';
-        };
-    </script>
+    // استعادة الإعدادات
+    if(localStorage.getItem('topName')) topName.value = localStorage.getItem('topName');
+    if(localStorage.getItem('topPrice')) topPrice.value = localStorage.getItem('topPrice');
+    if(localStorage.getItem('footer')) footer.value = localStorage.getItem('footer');
+    if(localStorage.getItem('nameSize')) nameSlider.value = localStorage.getItem('nameSize');
+    if(localStorage.getItem('priceSize')) priceSlider.value = localStorage.getItem('priceSize');
+    updateAll();
+    updateFonts();
+    document.getElementById('print-area').style.display = 'none';
+</script>
 </body>
 </html>
