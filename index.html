@@ -2,612 +2,199 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>حلواني بندق | الليبل الذهبي 4×1 سم</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <title>طابعة الملصقات الحرارية</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Cairo', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            background: linear-gradient(135deg, #fff3d1 0%, #ffe6b3 100%);
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
-        /* الحاوية الرئيسية - تصميم أفقي */
-        .gold-panel {
-            max-width: 1300px;
-            width: 100%;
-            background: #ffffffdd;
-            backdrop-filter: blur(4px);
-            border-radius: 56px;
-            box-shadow: 0 30px 40px -15px rgba(0,0,0,0.25), 0 0 0 1px #fbdc9c inset;
-            overflow: hidden;
-            display: flex;
-            flex-wrap: wrap;
-        }
-        /* قسم الإدخال */
-        .input-area {
-            flex: 2;
+
+        .container {
             background: white;
-            padding: 2rem 2rem 2rem 2rem;
-            border-radius: 0 56px 56px 0;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 350px;
         }
-        /* قسم المعاينة */
-        .preview-area {
-            flex: 1.5;
-            background: #fffbf0;
-            padding: 2rem 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-        }
+
         h2 {
-            font-size: 1.8rem;
-            font-weight: 900;
-            color: #b45f06;
-            border-right: 7px solid #f3b33d;
-            padding-right: 18px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
         }
-        .field {
-            margin-bottom: 1.3rem;
-        }
+
         label {
             display: block;
-            font-weight: 800;
-            font-size: 0.7rem;
-            color: #b45f06;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
+            margin: 12px 0 4px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #555;
         }
+
         input {
             width: 100%;
-            padding: 12px 18px;
-            border: 1.5px solid #f5e2b0;
-            border-radius: 40px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            background: #fffef7;
-            transition: 0.2s;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.3s;
         }
+
         input:focus {
             outline: none;
-            border-color: #f39c12;
-            box-shadow: 0 0 0 3px rgba(243,156,18,0.2);
+            border-color: #4a90d9;
         }
-        .sync-card {
-            background: #fff2e0;
-            border-radius: 60px;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-        /* مفتاح التبديل */
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 52px;
-            height: 26px;
-        }
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .slider-round {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #e0e0e0;
-            transition: 0.3s;
-            border-radius: 34px;
-        }
-        .slider-round:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: 0.3s;
-            border-radius: 50%;
-        }
-        input:checked + .slider-round {
-            background-color: #f39c12;
-        }
-        input:checked + .slider-round:before {
-            transform: translateX(26px);
-        }
-        /* معاينة البطاقات */
-        .mock-card {
-            background: white;
-            width: 100%;
-            max-width: 280px;
-            border-radius: 24px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            overflow: hidden;
-        }
-        .mock-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            border-bottom: 1px dashed #efdbc1;
-        }
-        .mock-row:last-child {
-            border-bottom: none;
-        }
-        .mock-text {
-            flex: 1;
-        }
-        .mock-title {
-            font-weight: 900;
-            font-size: 0.9rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .mock-sub {
-            font-size: 0.65rem;
-            font-weight: 700;
-            color: #b97f2e;
-        }
-        .mock-price-badge {
-            border: 1.5px solid #2c2c2c;
-            border-radius: 12px;
-            padding: 4px 12px;
-            text-align: center;
-            font-weight: 900;
-            min-width: 68px;
-            background: #fff7e8;
-        }
-        .btn-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
+
         .btn {
-            flex: 1;
+            width: 100%;
             padding: 12px;
-            border: none;
-            border-radius: 60px;
-            font-weight: 900;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-gold {
-            background: #f39c12;
+            margin-top: 20px;
+            background: #4a90d9;
             color: white;
-            box-shadow: 0 5px 12px rgba(243,156,18,0.3);
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        .btn-gold:hover {
-            background: #e67e22;
-            transform: scale(0.97);
-        }
-        .btn-outline {
-            background: #f3f3f3;
-            color: #7a4a1a;
-        }
-        .credit-line {
+
+        .btn:hover { background: #3a7bc8; }
+        .btn:active { transform: scale(0.97); }
+
+        .preview {
+            margin-top: 20px;
             text-align: center;
-            margin-top: 30px;
-            font-size: 0.7rem;
-            color: #cb8b2a;
-            border-top: 1px solid #f7e5c2;
-            padding-top: 18px;
+            font-size: 12px;
+            color: #999;
         }
-        /* إعدادات الطباعة - صفحة واحدة فقط */
+
+        /* إخفاء المحتوى المراد طباعته عن الشاشة */
+        .print-area {
+            display: none;
+        }
+
         @media print {
-            body * {
-                visibility: hidden;
-            }
-            #printZone, #printZone * {
+            body { visibility: hidden; background: white; }
+            .print-area {
                 visibility: visible;
-            }
-            #printZone {
-                position: fixed;
-                top: 0;
+                display: block;
+                position: absolute;
                 left: 0;
+                top: 0;
+                width: 40mm;  /* عرض الملصق */
+            }
+            .sticker {
                 width: 40mm;
                 height: 20mm;
-                margin: 0;
-                padding: 0;
-                background: white;
-                direction: rtl;
+                border: 0.5px dashed #000;
+                page-break-after: avoid;
+                overflow: hidden;
+                padding: 1mm 1.5mm;
                 display: flex;
                 flex-direction: column;
-            }
-            @page {
-                size: 40mm 20mm;
-                margin: 0mm;
-            }
-            .print-sticker-unit {
-                width: 40mm;
-                height: 10mm;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 0 1.5mm;
-                box-sizing: border-box;
-            }
-            .print-sticker-unit:first-child {
-                border-bottom: 0.3mm dashed #aaa;
-            }
-            .print-name {
-                font-weight: 900;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            .print-footer-line {
-                font-weight: bold;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            .print-price-block {
-                border: 0.8pt solid black;
-                border-radius: 2mm;
-                width: 12mm;
-                height: 7.5mm;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
                 justify-content: center;
+                font-family: Arial, sans-serif;
+                margin: 0 auto;
             }
-        }
-        .range-flex {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .range-flex input {
-            flex: 1;
+            .sticker + .sticker {
+                margin-top: 1mm;
+            }
+            .product-name {
+                font-size: 12pt;
+                font-weight: bold;
+                text-align: center;
+                line-height: 1.2;
+            }
+            .price-desc {
+                font-size: 8pt;
+                text-align: center;
+                line-height: 1.3;
+            }
+            .shop-name {
+                font-size: 6.5pt;
+                text-align: center;
+                margin-top: 1mm;
+            }
         }
     </style>
 </head>
 <body>
-<div class="gold-panel">
-    <div class="input-area">
-        <h2>
-            <span>🍯</span> حلواني بندق
-            <span style="font-size: 0.75rem; font-weight: 500;">ليبل مزدوج 4×1 سم</span>
-        </h2>
 
-        <div class="sync-card">
-            <span style="font-weight: 800;">🔄 مزامنة تلقائية (نسخ البيانات)</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="syncModeCheck" checked>
-                <span class="slider-round"></span>
-            </label>
-        </div>
+    <div class="container">
+        <h2>🖨️ طباعة ملصقات</h2>
 
-        <div class="field">
-            <label>🍬 المنتج - الملصق العلوي</label>
-            <input type="text" id="productTop" placeholder="مثال: علبة قراقيش عجوة" value="علبة قراقيش عجوة">
-        </div>
-        <div class="field">
-            <label>💰 السعر - العلوي (ج.م)</label>
-            <input type="number" id="priceTop" value="150" step="1">
-        </div>
+        <label>اسم المنتج</label>
+        <input type="text" id="product" placeholder="مثلاً: قهوة تركية">
 
-        <div id="bottomSectionWrapper" style="opacity: 0.65;">
-            <div class="field">
-                <label>🍪 المنتج - الملصق السفلي</label>
-                <input type="text" id="productBottom" value="علبة قراقيش عجوة" disabled>
-            </div>
-            <div class="field">
-                <label>💰 السعر - السفلي (ج.م)</label>
-                <input type="number" id="priceBottom" value="150" disabled>
-            </div>
-        </div>
+        <label>السعر</label>
+        <input type="text" id="price" placeholder="مثلاً: 25 ج.م">
 
-        <div class="field">
-            <label>🏷️ تذييل موحد (فرع / شعار)</label>
-            <input type="text" id="footerCommon" value="حلواني بندق - فرع 1">
-        </div>
+        <label>وصف المنتج</label>
+        <input type="text" id="desc" placeholder="مثلاً: 250 جرام">
 
-        <div class="field">
-            <label>📏 حجم خط الاسم</label>
-            <div class="range-flex">
-                <input type="range" id="nameFontRange" min="7" max="15" value="10" step="1">
-                <span id="nameSizeDisplay">10pt</span>
-            </div>
-        </div>
-        <div class="field">
-            <label>💰 حجم خط السعر</label>
-            <div class="range-flex">
-                <input type="range" id="priceFontRange" min="9" max="18" value="13" step="1">
-                <span id="priceSizeDisplay">13pt</span>
-            </div>
-        </div>
+        <label>اسم المحل</label>
+        <input type="text" id="shop" placeholder="مثلاً: سوبر ماركت النور">
 
-        <div class="btn-group">
-            <button class="btn btn-gold" id="printNowBtn">🖨️ طباعة (صفحة واحدة)</button>
-            <button class="btn btn-outline" id="fullResetBtn">🗑️ إعادة تعيين كامل</button>
-        </div>
+        <button class="btn" onclick="printStickers()">🖨️ طباعة إستيكرين (4×2 سم)</button>
+        <div class="preview">المقاس: 40mm × 20mm للملصق | عدد 2</div>
+    </div>
 
-        <div class="credit-line">
-            تطوير وبرمجة <strong>م/ محمود سلامه</strong> | حلواني بندق للصناعات الغذائية
+    <!-- محتوى الطباعة -->
+    <div class="print-area" id="printArea">
+        <div class="sticker">
+            <div class="product-name" id="stickerProduct1"></div>
+            <div class="price-desc" id="stickerPriceDesc1"></div>
+            <div class="shop-name" id="stickerShop1"></div>
+        </div>
+        <div class="sticker">
+            <div class="product-name" id="stickerProduct2"></div>
+            <div class="price-desc" id="stickerPriceDesc2"></div>
+            <div class="shop-name" id="stickerShop2"></div>
         </div>
     </div>
 
-    <div class="preview-area">
-        <div class="mock-card">
-            <div class="mock-row">
-                <div class="mock-text">
-                    <div class="mock-title" id="previewTopProduct">علبة قراقيش عجوة</div>
-                    <div class="mock-sub" id="previewTopFooter">حلواني بندق - فرع 1</div>
-                </div>
-                <div class="mock-price-badge">
-                    <span id="previewTopPrice">150</span><br>
-                    <span style="font-size: 8px;">ج.م</span>
-                </div>
-            </div>
-            <div class="mock-row">
-                <div class="mock-text">
-                    <div class="mock-title" id="previewBottomProduct">علبة قراقيش عجوة</div>
-                    <div class="mock-sub" id="previewBottomFooter">حلواني بندق - فرع 1</div>
-                </div>
-                <div class="mock-price-badge">
-                    <span id="previewBottomPrice">150</span><br>
-                    <span style="font-size: 8px;">ج.م</span>
-                </div>
-            </div>
-        </div>
-        <p style="font-size: 0.7rem; color: #aa7a3c; text-align: center;">
-            معاينة تقريبية | الطباعة الفعلية مقاس 40×20 مم (ملصقان)
-        </p>
-    </div>
-</div>
+    <script>
+        function printStickers() {
+            const product = document.getElementById('product').value.trim();
+            const price = document.getElementById('price').value.trim();
+            const desc = document.getElementById('desc').value.trim();
+            const shop = document.getElementById('shop').value.trim();
 
-<!-- منطقة الطباعة المخفية -->
-<div id="printZone" style="display: none;">
-    <div class="print-sticker-unit">
-        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; padding-left:1mm;">
-            <div class="print-name" id="printTopNameField">علبة قراقيش عجوة</div>
-            <div class="print-footer-line" id="printTopFooterField">حلواني بندق - فرع 1</div>
-        </div>
-        <div class="print-price-block">
-            <span class="print-name" id="printTopPriceField">150</span>
-            <span style="font-size: 5pt;">ج.م</span>
-        </div>
-    </div>
-    <div class="print-sticker-unit">
-        <div style="flex:1; display:flex; flex-direction:column; justify-content:center; padding-left:1mm;">
-            <div class="print-name" id="printBottomNameField">علبة قراقيش عجوة</div>
-            <div class="print-footer-line" id="printBottomFooterField">حلواني بندق - فرع 1</div>
-        </div>
-        <div class="print-price-block">
-            <span class="print-name" id="printBottomPriceField">150</span>
-            <span style="font-size: 5pt;">ج.م</span>
-        </div>
-    </div>
-</div>
-
-<script>
-    (function() {
-        // 🔹 مسح localStorage القديم تماماً لإزالة النصوص الفاسدة
-        const oldKeys = ['savedTopName', 'savedTopPrice', 'savedFooter', 'bondok_topName', 'bondok_topPrice', 'bondok_footer', 'bondok_bottomName', 'bondok_bottomPrice', 'bondok_nameSize', 'bondok_priceSize', 'topName', 'topPrice', 'footer'];
-        oldKeys.forEach(key => localStorage.removeItem(key));
-        
-        // العناصر
-        const topProduct = document.getElementById('productTop');
-        const topPrice = document.getElementById('priceTop');
-        const bottomProduct = document.getElementById('productBottom');
-        const bottomPrice = document.getElementById('priceBottom');
-        const footer = document.getElementById('footerCommon');
-        const syncCheck = document.getElementById('syncModeCheck');
-        const bottomWrapper = document.getElementById('bottomSectionWrapper');
-        
-        // المعاينة
-        const previewTopProduct = document.getElementById('previewTopProduct');
-        const previewTopPrice = document.getElementById('previewTopPrice');
-        const previewTopFooter = document.getElementById('previewTopFooter');
-        const previewBottomProduct = document.getElementById('previewBottomProduct');
-        const previewBottomPrice = document.getElementById('previewBottomPrice');
-        const previewBottomFooter = document.getElementById('previewBottomFooter');
-        
-        // الطباعة
-        const printTopName = document.getElementById('printTopNameField');
-        const printTopPrice = document.getElementById('printTopPriceField');
-        const printTopFooter = document.getElementById('printTopFooterField');
-        const printBottomName = document.getElementById('printBottomNameField');
-        const printBottomPrice = document.getElementById('printBottomPriceField');
-        const printBottomFooter = document.getElementById('printBottomFooterField');
-        
-        // السلايدرات
-        const nameSlider = document.getElementById('nameFontRange');
-        const priceSlider = document.getElementById('priceFontRange');
-        const nameSpan = document.getElementById('nameSizeDisplay');
-        const priceSpan = document.getElementById('priceSizeDisplay');
-        
-        let syncActive = true;
-        
-        function refreshAll() {
-            let topNameVal = topProduct.value.trim();
-            if (topNameVal === "") topNameVal = "منتج جديد";
-            let topPriceVal = topPrice.value.trim();
-            if (topPriceVal === "" || isNaN(parseFloat(topPriceVal))) topPriceVal = "0";
-            let footerVal = footer.value.trim();
-            if (footerVal === "") footerVal = "حلواني بندق";
-            
-            if (syncActive) {
-                bottomProduct.value = topNameVal;
-                bottomPrice.value = topPriceVal;
-                bottomProduct.disabled = true;
-                bottomPrice.disabled = true;
-                bottomWrapper.style.opacity = "0.65";
-            } else {
-                bottomProduct.disabled = false;
-                bottomPrice.disabled = false;
-                bottomWrapper.style.opacity = "1";
-            }
-            
-            let bottomNameVal = bottomProduct.value.trim();
-            if (bottomNameVal === "") bottomNameVal = "منتج سفلي";
-            let bottomPriceVal = bottomPrice.value.trim();
-            if (bottomPriceVal === "" || isNaN(parseFloat(bottomPriceVal))) bottomPriceVal = "0";
-            
-            // تحديث المعاينة
-            previewTopProduct.innerText = topNameVal;
-            previewTopPrice.innerText = topPriceVal;
-            previewTopFooter.innerText = footerVal;
-            previewBottomProduct.innerText = bottomNameVal;
-            previewBottomPrice.innerText = bottomPriceVal;
-            previewBottomFooter.innerText = footerVal;
-            
-            // تحديث الطباعة
-            printTopName.innerText = topNameVal;
-            printTopPrice.innerText = topPriceVal;
-            printTopFooter.innerText = footerVal;
-            printBottomName.innerText = bottomNameVal;
-            printBottomPrice.innerText = bottomPriceVal;
-            printBottomFooter.innerText = footerVal;
-            
-            // حفظ البيانات النظيفة
-            localStorage.setItem('bondok_clean_topName', topNameVal);
-            localStorage.setItem('bondok_clean_topPrice', topPriceVal);
-            localStorage.setItem('bondok_clean_footer', footerVal);
-            if (!syncActive) {
-                localStorage.setItem('bondok_clean_bottomName', bottomNameVal);
-                localStorage.setItem('bondok_clean_bottomPrice', bottomPriceVal);
-            } else {
-                localStorage.removeItem('bondok_clean_bottomName');
-                localStorage.removeItem('bondok_clean_bottomPrice');
-            }
-        }
-        
-        function applyFonts() {
-            let nameSize = nameSlider.value;
-            let priceSize = priceSlider.value;
-            nameSpan.innerText = nameSize + "pt";
-            priceSpan.innerText = priceSize + "pt";
-            
-            printTopName.style.fontSize = nameSize + 'pt';
-            printBottomName.style.fontSize = nameSize + 'pt';
-            printTopPrice.style.fontSize = priceSize + 'pt';
-            printBottomPrice.style.fontSize = priceSize + 'pt';
-            
-            // معاينة تقريبية
-            previewTopProduct.style.fontSize = (parseInt(nameSize)*1.2)+'px';
-            previewBottomProduct.style.fontSize = (parseInt(nameSize)*1.2)+'px';
-            previewTopPrice.style.fontSize = (parseInt(priceSize)*1.3)+'px';
-            previewBottomPrice.style.fontSize = (parseInt(priceSize)*1.3)+'px';
-            
-            localStorage.setItem('bondok_nameSize', nameSize);
-            localStorage.setItem('bondok_priceSize', priceSize);
-        }
-        
-        function printSingle() {
-            if (!topProduct.value.trim()) {
-                alert("الرجاء كتابة اسم المنتج العلوي");
-                topProduct.focus();
+            if (!product || !price || !shop) {
+                alert('يرجى ملء اسم المنتج، السعر، واسم المحل على الأقل.');
                 return;
             }
-            if (parseFloat(topPrice.value) <= 0) {
-                alert("السعر العلوي غير صحيح");
-                topPrice.focus();
-                return;
-            }
-            if (!syncActive && (!bottomProduct.value.trim() || parseFloat(bottomPrice.value) <= 0)) {
-                alert("يرجى إكمال البيانات السفلية أو تفعيل المزامنة");
-                return;
-            }
-            refreshAll();
-            applyFonts();
-            const zone = document.getElementById('printZone');
-            zone.style.display = 'flex';
-            setTimeout(() => {
-                window.print();
-                setTimeout(() => { zone.style.display = 'none'; }, 500);
-            }, 50);
+
+            const priceDescText = desc ? `${price}  -  ${desc}` : price;
+
+            // تعبئة الإستيكرين
+            document.getElementById('stickerProduct1').textContent = product;
+            document.getElementById('stickerPriceDesc1').textContent = priceDescText;
+            document.getElementById('stickerShop1').textContent = shop;
+
+            document.getElementById('stickerProduct2').textContent = product;
+            document.getElementById('stickerPriceDesc2').textContent = priceDescText;
+            document.getElementById('stickerShop2').textContent = shop;
+
+            // أمر الطباعة
+            window.print();
         }
-        
-        function fullReset() {
-            // مسح كل البيانات المخزنة نهائياً
-            localStorage.clear();
-            // إعادة تعيين الحقول للقيم الافتراضية النظيفة
-            topProduct.value = "علبة قراقيش عجوة";
-            topPrice.value = "150";
-            bottomProduct.value = "علبة قراقيش عجوة";
-            bottomPrice.value = "150";
-            footer.value = "حلواني بندق - فرع 1";
-            syncActive = true;
-            syncCheck.checked = true;
-            bottomProduct.disabled = true;
-            bottomPrice.disabled = true;
-            bottomWrapper.style.opacity = "0.65";
-            // إعادة السلايدرات
-            nameSlider.value = "10";
-            priceSlider.value = "13";
-            refreshAll();
-            applyFonts();
-            alert("✅ تم مسح الذاكرة وإعادة ضبط جميع الحقول إلى الوضع الافتراضي.");
-        }
-        
-        // الأحداث
-        topProduct.addEventListener('input', () => { if(syncActive) bottomProduct.value = topProduct.value; refreshAll(); });
-        topPrice.addEventListener('input', () => { if(syncActive) bottomPrice.value = topPrice.value; refreshAll(); });
-        bottomProduct.addEventListener('input', refreshAll);
-        bottomPrice.addEventListener('input', refreshAll);
-        footer.addEventListener('input', refreshAll);
-        syncCheck.addEventListener('change', (e) => {
-            syncActive = e.target.checked;
-            if(syncActive) {
-                bottomProduct.value = topProduct.value;
-                bottomPrice.value = topPrice.value;
+
+        // دعم اختصار Ctrl+P للطباعة مباشرة من الصفحة أيضاً
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                printStickers();
             }
-            refreshAll();
         });
-        nameSlider.addEventListener('input', applyFonts);
-        priceSlider.addEventListener('input', applyFonts);
-        document.getElementById('printNowBtn').addEventListener('click', printSingle);
-        document.getElementById('fullResetBtn').addEventListener('click', fullReset);
-        
-        // استعادة الإعدادات النظيفة إن وجدت
-        const savedTop = localStorage.getItem('bondok_clean_topName');
-        const savedPrice = localStorage.getItem('bondok_clean_topPrice');
-        const savedFoot = localStorage.getItem('bondok_clean_footer');
-        if(savedTop) topProduct.value = savedTop;
-        if(savedPrice) topPrice.value = savedPrice;
-        if(savedFoot) footer.value = savedFoot;
-        const savedNameSz = localStorage.getItem('bondok_nameSize');
-        const savedPriceSz = localStorage.getItem('bondok_priceSize');
-        if(savedNameSz) nameSlider.value = savedNameSz;
-        if(savedPriceSz) priceSlider.value = savedPriceSz;
-        
-        // تفعيل الوضع الافتراضي للمزامنة
-        syncActive = true;
-        syncCheck.checked = true;
-        bottomProduct.disabled = true;
-        bottomPrice.disabled = true;
-        bottomWrapper.style.opacity = "0.65";
-        
-        refreshAll();
-        applyFonts();
-        document.getElementById('printZone').style.display = 'none';
-    })();
-</script>
+    </script>
+
 </body>
 </html>
