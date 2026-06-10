@@ -1,344 +1,413 @@
-
+html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>برنامج طباعة الملصقات الحرارية لحلواني بندق</title>
-    <!-- استدعاء خطوط عربية (Cairo) من جوجل -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <!-- استدعاء مكتبة Tailwind CSS للتصميم -->
+    <title>برنامج طباعة الملصقات 4×1 سم - حلواني بندق</title>
+    <!-- استدعاء خط Cairo المميز -->
+    <link href="https://fonts.googleapis.com/css2 family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- استدعاء Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <style>
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #fffbeb; 
+            background-color: #fffbeb;
         }
 
-        /* -------------------------------------- */
-        /* إعدادات الطباعة الأساسية (حل مشكلة الترحيل) */
-        /* -------------------------------------- */
+        /* محاكاة الرول الحراري على الشاشة (خلفية صفراء وملصقات بيضاء مقسومة) */
+        .roll-simulation {
+            background-color: #fce8b2; /* لون ورق السند الأصفر في الصورة */
+            padding: 15px;
+            border-radius: 12px;
+            width: 320px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* الملصق الفردي بمقاس 40×10 مم نسبي على الشاشة */
+        .single-sticker-preview {
+            width: 100%;
+            height: 55px; /* ارتفاع نسبي للمعاينة الشاشية */
+            background-color: white;
+            border-radius: 4px;
+            padding: 4px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-sizing: border-box;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+
+        /* تأثير الخط الفاصل بين الملصقين في المعاينة */
+        .slit-line {
+            height: 6px; /* الفراغ الصغير بين الاستيكرين */
+            width: 100%;
+        }
+
+        /* * إعدادات الطباعة الحقيقية والنهائية للطابعة الحرارية */
         @media print {
-            body * { visibility: hidden; }
-            
-            /* إجبار المتصفح على إلغاء الهوامش تماماً */
-            @page { 
-                margin: 0 !important; 
-            }
-            
-            html, body {
-                margin: 0 !important;
-                padding: 0 !important;
+            body * {
+                visibility: hidden;
             }
 
-            #print-area, #print-area * { visibility: visible; }
+            @page {
+                size: 40mm 20mm; /* حجم الصفحة الإجمالي للرول المزدوج */
+                margin: 0;
+            }
+
+            #print-area, #print-area * {
+                visibility: visible;
+            }
 
             #print-area {
                 position: absolute;
                 left: 0;
                 top: 0;
-                width: 100%;
+                width: 40mm;
+                height: 20mm;
                 margin: 0;
                 padding: 0;
                 background-color: white;
-                color: black;
-                /* أوامر إجبارية لمنع ترحيل المحتوى لصفحات أخرى */
-                page-break-after: avoid !important;
-                page-break-inside: avoid !important;
-                overflow: hidden !important; 
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
             }
-            
-            /* إخفاء حدود المعاينة والظلال في الطباعة */
-            .preview-container { border: none !important; box-shadow: none !important; margin: 0 !important; }
-            .border-black { border-color: black !important; }
-            .print-no-border { border-bottom: none !important; margin-bottom: 0 !important; padding-bottom: 0 !important; }
-        }
 
-        /* -------------------------------------- */
-        /* تنسيقات المعاينة والطباعة بناءً على المقاس */
-        /* -------------------------------------- */
-
-        .single-label {
-            padding: 5px 2px;
-            text-align: center;
-            width: 100%;
-            box-sizing: border-box;
-            page-break-inside: avoid !important; /* منع تقسيم الاستيكر الواحد */
-        }
-
-        /* 1. مقاس 8 سم (80mm) الافتراضي */
-        .layout-80 .preview-container { width: 300px; margin: 0 auto; }
-        .layout-80 .p-name { font-size: 20pt; font-weight: 900; margin-bottom: 5px; line-height: 1.2; }
-        .layout-80 .p-desc { font-size: 14pt; font-weight: 700; margin-bottom: 5px; }
-        .layout-80 .p-price-box { display: inline-block; border: 2px solid black; border-radius: 8px; padding: 2px 10px; margin: 10px 0; }
-        .layout-80 .p-price { font-size: 18pt; font-weight: 900; }
-        .layout-80 .p-shop { font-size: 11pt; font-weight: 700; border-top: 2px dashed black; padding-top: 5px; margin-top: 5px; }
-
-        /* 2. مقاس 5.8 سم (58mm) */
-        .layout-58 .preview-container { width: 210px; margin: 0 auto; }
-        .layout-58 .p-name { font-size: 15pt; font-weight: 900; margin-bottom: 3px; line-height: 1.1; }
-        .layout-58 .p-desc { font-size: 11pt; font-weight: 700; margin-bottom: 3px; }
-        .layout-58 .p-price-box { display: inline-block; border: 1px solid black; border-radius: 6px; padding: 1px 6px; margin: 5px 0; }
-        .layout-58 .p-price { font-size: 14pt; font-weight: 900; }
-        .layout-58 .p-shop { font-size: 9pt; font-weight: 700; border-top: 1px dashed black; padding-top: 3px; margin-top: 3px; }
-
-        /* 3. مقاس 8 سم مقسوم (استيكرين فوق بعض) */
-        .layout-split .preview-container { width: 300px; margin: 0 auto; }
-        .layout-split #print-area { display: flex; flex-direction: column; }
-        .layout-split .single-label:first-child { border-bottom: 2px dashed #cbd5e1; padding-bottom: 10px; margin-bottom: 2px; }
-        .layout-split .p-name { font-size: 16pt; font-weight: 900; margin-bottom: 4px; line-height: 1.1; }
-        .layout-split .p-desc { font-size: 11pt; font-weight: 700; margin-bottom: 4px; }
-        .layout-split .p-price-box { display: inline-block; border: 2px solid black; border-radius: 6px; padding: 2px 8px; margin: 6px 0; }
-        .layout-split .p-price { font-size: 15pt; font-weight: 900; }
-        .layout-split .p-shop { font-size: 9pt; font-weight: 700; border-top: 1px dashed black; padding-top: 3px; margin-top: 3px; }
-
-        /* 4. مقاس 5 سم عرض × 3.5 سم ارتفاع */
-        .layout-50x35 .preview-container { width: 190px; margin: 0 auto; }
-        .layout-50x35 .single-label { padding: 2px 1px; }
-        .layout-50x35 .p-name { font-size: 12pt; font-weight: 900; margin-bottom: 2px; line-height: 1; }
-        .layout-50x35 .p-desc { font-size: 9pt; font-weight: 700; margin-bottom: 2px; line-height: 1; }
-        .layout-50x35 .p-price-box { display: inline-block; border: 1px solid black; border-radius: 4px; padding: 1px 4px; margin: 2px 0; }
-        .layout-50x35 .p-price { font-size: 12pt; font-weight: 900; }
-        .layout-50x35 .p-shop { font-size: 7pt; font-weight: 700; border-top: 1px dashed black; padding-top: 2px; margin-top: 2px; line-height: 1; }
-
-        /* 5. مقاس 38 مم عرض × 25.5 مم ارتفاع (المقاس الصغير جداً) - ضغط إضافي لمنع الترحيل */
-        .layout-38x25 .preview-container { width: 145px; margin: 0 auto; }
-        .layout-38x25 .single-label { padding: 0px 1px; max-height: 25mm; overflow: hidden; } /* منع التمدد نهائياً */
-        .layout-38x25 .p-name { font-size: 9pt; font-weight: 900; margin-bottom: 0px; line-height: 1; }
-        .layout-38x25 .p-desc { font-size: 7pt; font-weight: 700; margin-bottom: 0px; line-height: 1; }
-        .layout-38x25 .p-price-box { display: inline-block; border: 1px solid black; border-radius: 3px; padding: 0px 3px; margin: 1px 0; }
-        .layout-38x25 .p-price { font-size: 9pt; font-weight: 900; }
-        .layout-38x25 .p-shop { font-size: 5pt; font-weight: 700; border-top: 1px dashed black; padding-top: 1px; margin-top: 1px; line-height: 1; }
-
-        /* تنسيق الحاوية البيضاء للمعاينة */
-        .preview-container {
-            background: white;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            /* الملصق المطبوع بمقاس 40×10 مم الفعلي */
+            .print-sticker {
+                width: 40mm;
+                height: 10mm;
+                box-sizing: border-box;
+                padding: 1mm 2mm;
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                overflow: hidden;
+                page-break-inside: avoid;
+            }
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4 layout-80" id="bodyLayout">
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
 
     <!-- الحاوية الرئيسية للتطبيق -->
-    <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-10 border-t-4 border-amber-500 mb-6">
-        
-        <!-- القسم الأيمن: نموذج إدخال البيانات -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 border-t-4 border-amber-500 mb-6">
+
+        <!-- القسم الأيمن: إدخال البيانات والتحكم -->
         <div class="space-y-6 no-print">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-gray-100 pb-4">
-                <div class="flex items-center gap-3">
-                    <div class="bg-amber-100 p-3 rounded-full text-amber-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-black text-gray-800">حلواني بندق</h1>
-                        <p class="text-xs font-semibold text-amber-600">نظام طباعة الملصقات الحرارية</p>
-                    </div>
-                </div>
-
-                <!-- إعدادات الطابعة -->
-                <div class="bg-gray-50 p-2 rounded-lg border border-gray-200 shadow-sm">
-                    <label for="printerSize" class="block text-xs font-bold text-gray-500 mb-1 flex items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        إعدادات المقاس:
-                    </label>
-                    <select id="printerSize" class="w-full text-sm font-bold bg-white border border-gray-300 rounded px-2 py-1 outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer">
-                        <option value="80">مقاس 8 سم (80mm)</option>
-                        <option value="58">مقاس 5.8 سم (58mm)</option>
-                        <option value="split">استيكر 8 سم (مقسوم بالعرض)</option>
-                        <option value="50x35">مقاس 5 سم × 3.5 سم</option>
-                        <option value="38x25">مقاس 38 مم × 25.5 مم</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="space-y-4">
-                <!-- حقل اسم المنتج -->
-                <div>
-                    <label for="productNameInput" class="block text-sm font-bold text-gray-700 mb-1">اسم الصنف <span class="text-red-500">*</span></label>
-                    <input type="text" id="productNameInput" placeholder="مثال: علبة قراقيش عجوة" 
-                        class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all font-semibold">
-                </div>
-
-                <!-- حقل وصف المنتج -->
-                <div>
-                    <label for="productDescInput" class="block text-sm font-bold text-gray-700 mb-1">وصف المنتج</label>
-                    <textarea id="productDescInput" rows="2" placeholder="مثال: وزن 250 جرام - سمسم وعجوة" 
-                        class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all resize-none font-semibold text-sm"></textarea>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- حقل السعر -->
-                    <div>
-                        <label for="productPriceInput" class="block text-sm font-bold text-gray-700 mb-1">السعر <span class="text-red-500">*</span></label>
-                        <div class="relative">
-                            <input type="number" id="productPriceInput" placeholder="150" dir="ltr"
-                                class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all text-right font-black text-lg">
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <span class="text-gray-600 font-bold text-sm">ج.م</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- حقل اسم الفرع -->
-                    <div>
-                        <label for="shopNameInput" class="block text-sm font-bold text-gray-700 mb-1">اسم الفرع</label>
-                        <input type="text" id="shopNameInput" placeholder="مثال: فرع 1" 
-                            class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all font-semibold text-gray-600">
-                    </div>
-                </div>
-            </div>
-
-            <!-- أزرار التحكم -->
-            <div class="flex gap-4 pt-4">
-                <button onclick="printLabel()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-black py-3 px-4 rounded-xl transition-colors shadow-lg shadow-amber-500/30 flex justify-center items-center gap-2 text-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="flex items-center gap-3">
+                <div class="bg-amber-100 p-2.5 rounded-full text-amber-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                     </svg>
-                    طباعة
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black text-gray-800">حلواني بندق</h1>
+                    <p class="text-xs font-semibold text-amber-600">نظام طباعة الليبل المقسم 4×1 سم</p>
+                </div>
+            </div>
+
+            <!-- خيار ربط وتكرار الاستيكرين -->
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-bold text-amber-900">تكرار البيانات</h3>
+                    <p class="text-xs text-amber-700">طباعة نفس الصنف على الملصق العلوي والسفلي معاً</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="syncCheckbox" class="sr-only peer" checked onchange="toggleSync()">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                </label>
+            </div>
+
+            <!-- نموذج إدخال البيانات -->
+            <div class="space-y-4">
+
+                <!-- بيانات الملصق الأول / العلوي -->
+                <div class="border border-gray-100 rounded-xl p-4 bg-gray-50/50 space-y-3">
+                    <div class="text-xs font-bold text-amber-600 uppercase tracking-wider flex items-center gap-1">
+                        <span class="inline-block w-2 h-2 rounded-full bg-amber-500"></span>
+                        بيانات الملصق العلوي (1)
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold text-gray-600 mb-1">اسم الصنف</label>
+                            <input type="text" id="name1" value="علبة قراقيش عجوة" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm font-semibold outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">السعر</label>
+                            <input type="number" id="price1" value="150" class="w-full px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm font-black text-center outline-none focus:border-amber-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- بيانات الملصق الثاني / السفلي (يتم تعطيلها أو مزامنتها) -->
+                <div id="containerSticker2" class="border border-gray-100 rounded-xl p-4 bg-gray-50/50 space-y-3 opacity-60">
+                    <div class="text-xs font-bold text-amber-600 uppercase tracking-wider flex items-center gap-1">
+                        <span class="inline-block w-2 h-2 rounded-full bg-amber-500"></span>
+                        بيانات الملصق السفلي (2)
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="col-span-2">
+                            <label class="block text-xs font-bold text-gray-600 mb-1">اسم الصنف</label>
+                            <input type="text" id="name2" value="علبة قراقيش عجوة" disabled class="w-full px-3 py-1.5 bg-gray-100 border border-gray-300 rounded-lg text-sm font-semibold outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">السعر</label>
+                            <input type="number" id="price2" value="150" disabled class="w-full px-3 py-1.5 bg-gray-100 border border-gray-300 rounded-lg text-sm font-black text-center outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- رسالة الفرع الثابتة -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">رسالة التذييل (تظهر في كلا الملصقين بخط صغير جداً)</label>
+                    <input type="text" id="shopFooter" value="حلواني بندق - فرع 1" class="w-full px-3 py-1.5 bg-gray-50 border border-gray-300 rounded-lg text-sm font-bold text-gray-700 outline-none focus:border-amber-500">
+                </div>
+            </div>
+
+            <!-- لوحة التحكم منزلقة لحجم الخط (لتجنب مشاكل دقة الطابعة) -->
+            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 space-y-3">
+                <h4 class="text-xs font-bold text-gray-700 flex items-center gap-1">
+                    ⚙️ مُعاير مقاسات الخطوط (للتحكم في وضوح الطباعة):
+                </h4>
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-gray-600 font-semibold">حجم اسم الصنف:</span>
+                        <input type="range" id="sliderNameSize" min="7" max="15" value="10" class="w-1/2 accent-amber-500" oninput="adjustFontSizes()">
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-gray-600 font-semibold">حجم السعر:</span>
+                        <input type="range" id="sliderPriceSize" min="9" max="18" value="12" class="w-1/2 accent-amber-500" oninput="adjustFontSizes()">
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-gray-600 font-semibold">حجم اسم المحل:</span>
+                        <input type="range" id="sliderShopSize" min="5" max="9" value="6" class="w-1/2 accent-amber-500" oninput="adjustFontSizes()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- أزرار العمليات -->
+            <div class="flex gap-3">
+                <button onclick="printLabel()" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-black py-3.5 px-4 rounded-xl transition-colors shadow-lg shadow-amber-500/30 flex justify-center items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+                    </svg>
+                    طباعة الاستيكر (4×2 سم)
                 </button>
-                <button onclick="clearFields()" class="px-6 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition-colors">
+                <button onclick="clearFields()" class="px-5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3.5 rounded-xl transition-colors text-sm">
                     تفريغ
                 </button>
             </div>
+
         </div>
 
-        <!-- القسم الأيسر: المعاينة الحية -->
-        <div class="bg-gray-50/80 rounded-2xl p-6 flex flex-col items-center justify-center border-2 border-dashed border-amber-200 no-print overflow-hidden relative">
-            
-            <div class="absolute top-4 right-4 flex items-center gap-2 bg-white px-3 py-1 rounded-full shadow-sm">
-                <span class="relative flex h-2 w-2">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-                </span>
-                <span class="text-xs font-bold text-gray-600" id="previewBadge">معاينة 8 سم</span>
-            </div>
-            
-            <!-- هذه هي المنطقة التي سيتم طباعتها فعلياً -->
-            <div id="print-area" class="preview-container bg-white mt-8">
-                <!-- سيتم حقن كود الملصق هنا بواسطة الجافاسكربت -->
+        <!-- القسم الأيسر: محاكاة شكل الاستيكر المزدوج -->
+        <div class="bg-gray-50/50 rounded-2xl p-6 flex flex-col items-center justify-center border-2 border-dashed border-amber-200 no-print">
+            <h2 class="text-xs font-black text-amber-600 uppercase tracking-wider mb-3">شكل الورقة الحرارية (40×20 مم)</h2>
+
+            <!-- محاكاة الرول الحقيقي المرفق في صورتك -->
+            <div class="roll-simulation">
+
+                <!-- الملصق العلوي (1) -->
+                <div class="single-sticker-preview" id="previewSticker1">
+                    <div class="flex-1 min-w-0 pr-1 flex flex-col justify-between h-full py-0.5">
+                        <div class="p-name-el font-black text-gray-900 truncate leading-tight">علبة قراقيش عجوة</div>
+                        <div class="p-shop-el text-gray-500 font-bold truncate tracking-tighter">حلواني بندق - فرع 1</div>
+                    </div>
+                    <!-- السعر على اليسار لضمان أكبر حجم خط ممكن -->
+                    <div class="p-price-container border-2 border-black rounded-md px-1.5 py-0.5 text-center flex flex-col justify-center min-w-[50px] h-full">
+                        <span class="p-price-val-el font-black block leading-none">150</span>
+                        <span class="text-[6pt] font-black block mt-0.5">ج.م</span>
+                    </div>
+                </div>
+
+                <!-- خط الجرح / التقسيم بالمنتصف -->
+                <div class="slit-line flex items-center justify-center">
+                    <span class="w-full border-b border-dashed border-gray-400"></span>
+                </div>
+
+                <!-- الملصق السفلي (2) -->
+                <div class="single-sticker-preview" id="previewSticker2">
+                    <div class="flex-1 min-w-0 pr-1 flex flex-col justify-between h-full py-0.5">
+                        <div class="p-name-el font-black text-gray-900 truncate leading-tight">علبة قراقيش عجوة</div>
+                        <div class="p-shop-el text-gray-500 font-bold truncate tracking-tighter">حلواني بندق - فرع 1</div>
+                    </div>
+                    <div class="p-price-container border-2 border-black rounded-md px-1.5 py-0.5 text-center flex flex-col justify-center min-w-[50px] h-full">
+                        <span class="p-price-val-el font-black block leading-none">150</span>
+                        <span class="text-[6pt] font-black block mt-0.5">ج.م</span>
+                    </div>
+                </div>
+
             </div>
 
-            <p class="text-xs text-gray-400 mt-6 text-center font-semibold max-w-xs">
-                في شاشة الطباعة تأكد من: Margins = None
+            <p class="text-xs text-gray-400 mt-6 text-center font-semibold leading-relaxed">
+                الخط المتقطع بالمنتصف يمثل السكين أو القطع الداخلي للرول.<br>
+                يُرجى ضبط هوامش الطابعة على <strong>None</strong> قبل إصدار الطباعة.
             </p>
         </div>
 
     </div>
 
-    <!-- تذييل الصفحة -->
-    <div class="no-print text-center w-full max-w-5xl flex flex-col md:flex-row justify-between items-center bg-white/80 backdrop-blur-md rounded-xl p-4 border border-gray-200 shadow-sm">
-        <div class="mb-2 md:mb-0">
-             <p class="text-gray-700 font-bold text-sm">صُمم خصيصاً لـ <span class="text-amber-600 text-lg ml-1">شركة حلواني بندق</span></p>
+    <!-- تذييل الصفحة (حقوق البرمجة والتطوير) -->
+    <div class="no-print text-center w-full max-w-5xl mb-4 bg-white/60 backdrop-blur-sm rounded-xl py-4 border border-amber-200 shadow-sm">
+        <p class="text-gray-700 font-bold text-sm mb-1">صُمم خصيصاً لـ <span class="text-amber-600">شركة حلواني بندق للصناعات الغذائية</span></p>
+        <p class="text-xs text-gray-500 font-semibold flex items-center justify-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+            تطوير وبرمجة <span class="text-gray-800">م/ محمود سلامه</span>
+        </p>
+    </div>
+
+    <!-- منطقة الطباعة غير المرئية على الشاشة والمخصصة للطابعة فقط بمقاس 40×20 مم -->
+    <div id="print-area">
+        <!-- الاستيكر العلوي (1) بمقاس 40×10 مم حقيقي -->
+        <div class="print-sticker" id="printSticker1" style="border-bottom: 0.5px dashed transparent;">
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; height: 100%; min-width: 0; padding-right: 1mm;">
+                <div class="p-name-print font-black text-black leading-tight" style="font-size: 10pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">علبة قراقيش عجوة</div>
+                <div class="p-shop-print font-bold text-black" style="font-size: 6pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">حلواني بندق - فرع 1</div>
+            </div>
+            <div class="price-box-print" style="border: 1px solid black; border-radius: 1mm; width: 12mm; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <span class="p-price-print font-black" style="font-size: 12pt; line-height: 1;">150</span>
+                <span style="font-size: 5pt; font-weight: 900; line-height: 1; margin-top: 0.5mm;">ج.م</span>
+            </div>
         </div>
-        
-        <div class="flex items-center gap-2 bg-amber-50 px-4 py-2 rounded-lg border border-amber-100">
-             <div class="bg-amber-500 p-1.5 rounded-md text-white">
-                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                 </svg>
-             </div>
-             <p class="text-sm font-bold text-gray-600">
-                 برمجة وتطوير: <span class="text-gray-900 font-black text-base ml-1">م/ محمود سلامة</span>
-             </p>
+
+        <!-- الاستيكر السفلي (2) بمقاس 40×10 مم حقيقي -->
+        <div class="print-sticker" id="printSticker2">
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; height: 100%; min-width: 0; padding-right: 1mm;">
+                <div class="p-name-print font-black text-black leading-tight" style="font-size: 10pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">علبة قراقيش عجوة</div>
+                <div class="p-shop-print font-bold text-black" style="font-size: 6pt; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">حلواني بندق - فرع 1</div>
+            </div>
+            <div class="price-box-print" style="border: 1px solid black; border-radius: 1mm; width: 12mm; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <span class="p-price-print font-black" style="font-size: 12pt; line-height: 1;">150</span>
+                <span style="font-size: 5pt; font-weight: 900; line-height: 1; margin-top: 0.5mm;">ج.م</span>
+            </div>
         </div>
     </div>
 
-    <!-- كود الجافاسكربت -->
+    <!-- كود التشغيل والربط والتزامن -->
     <script>
-        // تعريف المتغيرات للحقول
-        const inputs = {
-            name: document.getElementById('productNameInput'),
-            desc: document.getElementById('productDescInput'),
-            price: document.getElementById('productPriceInput'),
-            shop: document.getElementById('shopNameInput'),
-            size: document.getElementById('printerSize')
-        };
+        // ربط عناصر التحكم
+        const name1 = document.getElementById('name1');
+        const price1 = document.getElementById('price1');
+        const name2 = document.getElementById('name2');
+        const price2 = document.getElementById('price2');
+        const shopFooter = document.getElementById('shopFooter');
+        const syncCheckbox = document.getElementById('syncCheckbox');
+        const containerSticker2 = document.getElementById('containerSticker2');
 
-        const printArea = document.getElementById('print-area');
-        const bodyLayout = document.getElementById('bodyLayout');
-        const previewBadge = document.getElementById('previewBadge');
+        // سلايدرات حجم الخطوط
+        const sliderNameSize = document.getElementById('sliderNameSize');
+        const sliderPriceSize = document.getElementById('sliderPriceSize');
+        const sliderShopSize = document.getElementById('sliderShopSize');
 
-        // استرجاع الإعدادات المحفوظة عند تحميل الصفحة
+        // استرجاع الإعدادات المحفوظة وتعيينها
         window.onload = () => {
             const savedShopName = localStorage.getItem('thermal_shop_name');
-            const savedPrinterSize = localStorage.getItem('thermal_printer_size');
-            
-            if (savedShopName) inputs.shop.value = savedShopName;
-            if (savedPrinterSize) inputs.size.value = savedPrinterSize;
-            
-            updateLabelPreview();
+            if (savedShopName) {
+                shopFooter.value = savedShopName;
+            }
+
+            // قراءة السلايدرات إن كانت محفوظة مسبقاً
+            const sn = localStorage.getItem('slider_name_size');
+            const sp = localStorage.getItem('slider_price_size');
+            const ss = localStorage.getItem('slider_shop_size');
+            if (sn) sliderNameSize.value = sn;
+            if (sp) sliderPriceSize.value = sp;
+            if (ss) sliderShopSize.value = ss;
+
+            updateAllPreviews();
+            adjustFontSizes();
         };
 
-        // وظيفة بناء تصميم الاستيكر الواحد
-        function buildSingleLabelHTML(name, desc, price, shop, isTopLabel = false) {
-            // الكلاس print-no-border سيخفي الخط الوهمي أثناء الطباعة الفعليه
-            const addBorderClass = isTopLabel ? 'print-no-border' : '';
-            return `
-                <div class="single-label ${addBorderClass}">
-                    <div class="p-name text-gray-900 break-words">${name || 'اسم الصنف'}</div>
-                    ${desc ? `<div class="p-desc text-gray-700 break-words">${desc}</div>` : ''}
-                    
-                    <div class="p-price-box border-black">
-                         <span class="text-xs font-bold">السعر:</span>
-                         <span class="p-price mx-1">${price || '0'}</span>
-                         <span class="text-xs font-bold">ج.م</span>
-                    </div>
-
-                    <div class="p-shop text-gray-800 break-words">
-                        <span class="block mb-1">حلواني بندق</span>
-                        <span class="text-gray-600" style="font-size: 0.8em; font-weight: normal;">${shop || 'فرع 1'}</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        // تحديث المعاينة بناءً على المدخلات واختيار الطابعة
-        function updateLabelPreview() {
-            const name = inputs.name.value;
-            const desc = inputs.desc.value;
-            const price = inputs.price.value;
-            const shop = inputs.shop.value || 'فرع 1';
-            const size = inputs.size.value;
-
-            // تحديث الكلاس العام للتحكم في مقاسات الـ CSS
-            bodyLayout.className = `min-h-screen flex flex-col items-center justify-center p-4 layout-${size}`;
-
-            // تحديث شارة المعاينة
-            if(size === '80') previewBadge.textContent = 'معاينة 8 سم';
-            if(size === '58') previewBadge.textContent = 'معاينة 5.8 سم';
-            if(size === 'split') previewBadge.textContent = 'معاينة 8 سم مقسوم';
-            if(size === '50x35') previewBadge.textContent = 'معاينة 5×3.5 سم';
-            if(size === '38x25') previewBadge.textContent = 'معاينة 38×25.5 مم';
-
-            // إذا كان الخيار مقسوم (split)، نقوم بعرض نسختين فوق بعض
-            if (size === 'split') {
-                const topLabel = buildSingleLabelHTML(name, desc, price, shop, true);
-                const bottomLabel = buildSingleLabelHTML(name, desc, price, shop, false);
-                printArea.innerHTML = topLabel + bottomLabel;
+        // تفعيل / تعطيل وضع مزامنة الملصقين
+        function toggleSync() {
+            const isSynced = syncCheckbox.checked;
+            if (isSynced) {
+                containerSticker2.classList.add('opacity-60');
+                name2.disabled = true;
+                price2.disabled = true;
+                // نسخ قيم الاستيكر الأول للثاني
+                name2.value = name1.value;
+                price2.value = price1.value;
             } else {
-                printArea.innerHTML = buildSingleLabelHTML(name, desc, price, shop); // استيكر واحد لباقي المقاسات
+                containerSticker2.classList.remove('opacity-60');
+                name2.disabled = false;
+                price2.disabled = false;
             }
-            
-            // حفظ الإعدادات في الذاكرة
-            localStorage.setItem('thermal_shop_name', shop);
-            localStorage.setItem('thermal_printer_size', size);
+            updateAllPreviews();
         }
 
-        // إضافة مستمعي الأحداث لجميع الحقول لتحديث المعاينة فورياً
-        Object.values(inputs).forEach(input => {
-            input.addEventListener('input', updateLabelPreview);
-            input.addEventListener('change', updateLabelPreview);
-        });
+        // تحديث كل المعاينات المباشرة (الشاشة + الطباعة)
+        function updateAllPreviews() {
+            // المزامنة التلقائية إذا كانت مفعلة
+            if (syncCheckbox.checked) {
+                name2.value = name1.value;
+                price2.value = price1.value;
+            }
 
-        // رسالة التنبيه المخصصة
+            // تحديث نصوص المعاينة على الشاشة للملصق الأول
+            document.querySelector('#previewSticker1 .p-name-el').textContent = name1.value || 'صنف جديد';
+            document.querySelector('#previewSticker1 .p-price-val-el').textContent = price1.value || '0';
+            document.querySelector('#previewSticker1 .p-shop-el').textContent = shopFooter.value || '';
+
+            // تحديث نصوص المعاينة على الشاشة للملصق الثاني
+            document.querySelector('#previewSticker2 .p-name-el').textContent = name2.value || 'صنف جديد';
+            document.querySelector('#previewSticker2 .p-price-val-el').textContent = price2.value || '0';
+            document.querySelector('#previewSticker2 .p-shop-el').textContent = shopFooter.value || '';
+
+            // تحديث نصوص طباعة الملصق الأول
+            document.querySelector('#printSticker1 .p-name-print').textContent = name1.value || 'صنف جديد';
+            document.querySelector('#printSticker1 .p-price-print').textContent = price1.value || '0';
+            document.querySelector('#printSticker1 .p-shop-print').textContent = shopFooter.value || '';
+
+            // تحديث نصوص طباعة الملصق الثاني
+            document.querySelector('#printSticker2 .p-name-print').textContent = name2.value || 'صنف جديد';
+            document.querySelector('#printSticker2 .p-price-print').textContent = price2.value || '0';
+            document.querySelector('#printSticker2 .p-shop-print').textContent = shopFooter.value || '';
+
+            // حفظ التذييل في المتصفح تلقائياً
+            localStorage.setItem('thermal_shop_name', shopFooter.value);
+        }
+
+        // تغيير حجم الخطوط مباشرة بناءً على السلايدرات
+        function adjustFontSizes() {
+            const nameSizeVal = sliderNameSize.value;
+            const priceSizeVal = sliderPriceSize.value;
+            const shopSizeVal = sliderShopSize.value;
+
+            // حفظ الإعدادات في الـ LocalStorage لمساعدة المستخدم في حفظ تدرجه
+            localStorage.setItem('slider_name_size', nameSizeVal);
+            localStorage.setItem('slider_price_size', priceSizeVal);
+            localStorage.setItem('slider_shop_size', shopSizeVal);
+
+            // تطبيق المقاسات على معاينة الشاشة
+            // 1. حجم اسم الصنف (الشاشة)
+            document.querySelectorAll('.p-name-el').forEach(el => el.style.fontSize = (nameSizeVal * 1.2) + 'px');
+            // 2. حجم السعر (الشاشة)
+            document.querySelectorAll('.p-price-val-el').forEach(el => el.style.fontSize = (priceSizeVal * 1.3) + 'px');
+            // 3. حجم التذييل (الشاشة)
+            document.querySelectorAll('.p-shop-el').forEach(el => el.style.fontSize = (shopSizeVal * 1.3) + 'px');
+
+            // تطبيق المقاسات على عناصر الطباعة الفعلية بدقة الـ pt المقروءة للطابعة
+            document.querySelectorAll('.p-name-print').forEach(el => el.style.fontSize = nameSizeVal + 'pt');
+            document.querySelectorAll('.p-price-print').forEach(el => el.style.fontSize = priceSizeVal + 'pt');
+            document.querySelectorAll('.p-shop-print').forEach(el => el.style.fontSize = shopSizeVal + 'pt');
+        }
+
+        // ربط الأحداث مع الدوال
+        name1.addEventListener('input', updateAllPreviews);
+        price1.addEventListener('input', updateAllPreviews);
+        name2.addEventListener('input', updateAllPreviews);
+        price2.addEventListener('input', updateAllPreviews);
+        shopFooter.addEventListener('input', updateAllPreviews);
+
+        // إظهار رسالة خطأ أنيقة
         function showMessage(msg) {
             const msgBox = document.createElement('div');
             msgBox.className = 'fixed top-6 right-6 bg-red-100 border-r-4 border-red-500 text-red-800 px-6 py-4 rounded shadow-xl z-50 transition-all duration-300 transform font-bold flex items-center gap-3';
@@ -349,7 +418,7 @@
                 <span>${msg}</span>
             `;
             document.body.appendChild(msgBox);
-            
+
             setTimeout(() => {
                 msgBox.style.opacity = '0';
                 msgBox.style.transform = 'translateY(-20px)';
@@ -357,34 +426,44 @@
             }, 3000);
         }
 
-        // دالة الطباعة 
+        // استدعاء نافذة الطباعة
         function printLabel() {
-            if (!inputs.name.value.trim()) {
-                showMessage('الرجاء كتابة اسم الصنف أولاً!');
-                inputs.name.focus();
+            if (!name1.value.trim()) {
+                showMessage('برجاء كتابة اسم الصنف في الملصق العلوي!');
+                name1.focus();
                 return;
             }
-            if (!inputs.price.value.trim()) {
-                showMessage('الرجاء كتابة السعر قبل الطباعة!');
-                inputs.price.focus();
+            if (!price1.value.trim() || price1.value == 0) {
+                showMessage('برجاء إدخال السعر في الملصق العلوي!');
+                price1.focus();
                 return;
             }
-            
+            if (!syncCheckbox.checked) {
+                if (!name2.value.trim()) {
+                    showMessage('برجاء كتابة اسم الصنف في الملصق السفلي أو تفعيل التكرار التلقائي!');
+                    name2.focus();
+                    return;
+                }
+                if (!price2.value.trim() || price2.value == 0) {
+                    showMessage('برجاء إدخال السعر في الملصق السفلي!');
+                    price2.focus();
+                    return;
+                }
+            }
+
+            // تفعيل نافذة طباعة المتصفح
             window.print();
         }
 
-        // دالة تفريغ الحقول
+        // تفريغ الحقول بالكامل
         function clearFields() {
-            inputs.name.value = '';
-            inputs.desc.value = '';
-            inputs.price.value = '';
-            // لا نفرغ اسم الفرع أو مقاس الطابعة لتسهيل العمل
-            updateLabelPreview();
-            inputs.name.focus();
+            name1.value = '';
+            price1.value = '';
+            name2.value = '';
+            price2.value = '';
+            updateAllPreviews();
+            name1.focus();
         }
     </script>
 </body>
 </html>
-
-
-```
