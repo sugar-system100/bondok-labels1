@@ -631,4 +631,348 @@
         mockBottomName.style.fontSize = (parseFloat(nameSize) * 1.1) + 'px';
         mockTopPrice.style.fontSize = (parseFloat(priceSize) * 1.2) + 'px';
         mockBottomPrice.style.fontSize = (parseFloat(priceSize) * 1.2) + 'px';
-        mockTopFooter.style.fontSize = (parseFloat(footerSize) * 1.3) + '
+        mockTopFooter.style.fontSize = (parseFloat(footerSize) * 1.3) + 'px';
+        mockBottomFooter.style.fontSize = (parseFloat(footerSize) * 1.3) + 'px';
+
+        // Print output (exact pt)
+        printTopName.style.fontSize = nameSize + 'pt';
+        printBottomName.style.fontSize = nameSize + 'pt';
+        printTopPrice.style.fontSize = priceSize + 'pt';
+        printBottomPrice.style.fontSize = priceSize + 'pt';
+        printTopFooter.style.fontSize = footerSize + 'pt';
+        printBottomFooter.style.fontSize = footerSize + 'pt';
+      }
+
+      // === تحديث حجم منطقة الطباعة ===
+      function updatePrintAreaSize() {
+        const printOutput = document.getElementById('thermal-print-output');
+        const orientation = printOrientation.value;
+        
+        if (orientation === 'vertical') {
+          printOutput.style.width = '40mm';
+          printOutput.style.height = '20mm';
+          printOutput.style.flexDirection = 'column';
+        } else {
+          printOutput.style.width = '20mm';
+          printOutput.style.height = '40mm';
+          printOutput.style.flexDirection = 'row';
+        }
+      }
+
+      // === Print Function ===
+      function executePrint() {
+        // Validation
+        if (!topNameInput.value.trim()) {
+          showToast('⚠️ الرجاء إدخال اسم المنتج في الملصق العلوي', 'error');
+          topNameInput.focus();
+          return;
+        }
+        if (!topPriceInput.value || parseFloat(topPriceInput.value) <= 0) {
+          showToast('⚠️ السعر العلوي غير صالح', 'error');
+          topPriceInput.focus();
+          return;
+        }
+        if (!isSyncMode) {
+          if (!bottomNameInput.value.trim()) {
+            showToast('⚠️ الملصق السفلي: اسم المنتج مطلوب', 'error');
+            bottomNameInput.focus();
+            return;
+          }
+          if (!bottomPriceInput.value || parseFloat(bottomPriceInput.value) <= 0) {
+            showToast('⚠️ السعر السفلي غير صالح', 'error');
+            bottomPriceInput.focus();
+            return;
+          }
+        }
+
+        refreshAllDisplays();
+        updateFontSizes();
+        updatePrintAreaSize();
+
+        const printOutput = document.getElementById('thermal-print-output');
+        printOutput.style.display = 'flex';
+        printOutput.style.visibility = 'visible';
+        printOutput.style.position = 'absolute';
+        printOutput.style.top = '0';
+        printOutput.style.left = '0';
+
+        // تعيين اتجاه الصفحة للطباعة
+        const orientation = printOrientation.value;
+        const printStyle = document.createElement('style');
+        printStyle.id = 'dynamic-print-style';
+        printStyle.textContent = `
+          @media print {
+            @page {
+              size: ${orientation === 'vertical' ? '40mm 20mm' : '20mm 40mm'} !important;
+              margin: 0 !important;
+            }
+          }
+        `;
+        
+        // إزالة النمط القديم إذا وجد
+        const oldStyle = document.getElementById('dynamic-print-style');
+        if (oldStyle) oldStyle.remove();
+        document.head.appendChild(printStyle);
+
+        setTimeout(() => {
+          const copies = parseInt(copyCount.value) || 1;
+          
+          // للطباعة بعدد نسخ محدد
+          for (let i = 0; i < copies; i++) {
+            window.print();
+          }
+          
+          setTimeout(() => {
+            printOutput.style.display = 'none';
+            printOutput.style.visibility = 'hidden';
+            printOutput.style.position = 'absolute';
+            showToast('✅ تم إرسال الطباعة إلى الطابعة', 'success');
+          }, 300);
+        }, 100);
+      }
+
+      // === Preview Function ===
+      function showPreview() {
+        refreshAllDisplays();
+        updateFontSizes();
+        updatePrintAreaSize();
+        
+        const printOutput = document.getElementById('thermal-print-output');
+        printOutput.style.display = 'flex';
+        printOutput.style.visibility = 'visible';
+        printOutput.style.position = 'relative';
+        printOutput.style.margin = '20px auto';
+        printOutput.style.border = '2px dashed #f59e0b';
+        printOutput.style.borderRadius = '8px';
+        printOutput.style.backgroundColor = 'white';
+        
+        // التمرير إلى منطقة المعاينة
+        printOutput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        showToast('👀 المعاينة معروضة أدناه', 'info');
+        
+        // إخفاء المعاينة بعد 5 ثواني
+        setTimeout(() => {
+          printOutput.style.display = 'none';
+          printOutput.style.visibility = 'hidden';
+          printOutput.style.position = 'absolute';
+          printOutput.style.margin = '0';
+          printOutput.style.border = 'none';
+          printOutput.style.borderRadius = '0';
+        }, 5000);
+      }
+
+      // === Clear Fields ===
+      function clearAllFields() {
+        topNameInput.value = '';
+        topPriceInput.value = '';
+        if (!isSyncMode) {
+          bottomNameInput.value = '';
+          bottomPriceInput.value = '';
+        }
+        footerInput.value = 'حلواني بندق';
+        refreshAllDisplays();
+        topNameInput.focus();
+        showToast('🧹 تم مسح جميع الحقول', 'info');
+      }
+
+      // === Save Preset ===
+      function saveCurrentPreset() {
+        const preset = {
+          topName: topNameInput.value,
+          topPrice: topPriceInput.value,
+          bottomName: bottomNameInput.value,
+          bottomPrice: bottomPriceInput.value,
+          footer: footerInput.value,
+          nameSize: nameRange.value,
+          priceSize: priceRange.value,
+          footerSize: footerRange.value,
+          printer: printerModel.value,
+          orientation: printOrientation.value,
+          dpi: printDpi.value,
+          density: printDensity.value,
+          speed: printSpeed.value,
+          sync: isSyncMode,
+          timestamp: new Date().toLocaleString('ar-EG')
+        };
+        
+        try {
+          const presets = JSON.parse(localStorage.getItem('halwani_presets') || '[]');
+          presets.unshift(preset);
+          if (presets.length > 20) presets.pop();
+          localStorage.setItem('halwani_presets', JSON.stringify(presets));
+          showToast('💾 تم حفظ الإعداد المسبق (' + presets.length + ' إعدادات محفوظة)', 'success');
+        } catch (e) {
+          showToast('❌ فشل في حفظ الإعداد', 'error');
+        }
+      }
+
+      // === Event Listeners ===
+      topNameInput.addEventListener('input', () => {
+        if (isSyncMode) bottomNameInput.value = topNameInput.value;
+        refreshAllDisplays();
+      });
+      
+      topPriceInput.addEventListener('input', () => {
+        if (isSyncMode) bottomPriceInput.value = topPriceInput.value;
+        refreshAllDisplays();
+      });
+      
+      bottomNameInput.addEventListener('input', () => {
+        if (!isSyncMode) refreshAllDisplays();
+      });
+      
+      bottomPriceInput.addEventListener('input', () => {
+        if (!isSyncMode) refreshAllDisplays();
+      });
+      
+      footerInput.addEventListener('input', refreshAllDisplays);
+
+      syncToggle.addEventListener('change', (e) => {
+        isSyncMode = e.target.checked;
+        if (isSyncMode) {
+          bottomNameInput.value = topNameInput.value;
+          bottomPriceInput.value = topPriceInput.value;
+        }
+        refreshAllDisplays();
+      });
+
+      nameRange.addEventListener('input', updateFontSizes);
+      priceRange.addEventListener('input', updateFontSizes);
+      footerRange.addEventListener('input', updateFontSizes);
+
+      // Printer settings change handlers
+      printOrientation.addEventListener('change', () => {
+        updatePrintAreaSize();
+        showToast('📐 تم تغيير الاتجاه إلى: ' + (printOrientation.value === 'vertical' ? 'عمودي' : 'أفقي'), 'info');
+      });
+
+      printerModel.addEventListener('change', () => {
+        showToast('🖨️ تم اختيار: ' + printerModel.options[printerModel.selectedIndex].text, 'info');
+      });
+
+      // Buttons
+      document.getElementById('printBtn').addEventListener('click', executePrint);
+      document.getElementById('previewBtn').addEventListener('click', showPreview);
+      document.getElementById('clearBtn').addEventListener('click', clearAllFields);
+      document.getElementById('savePresetBtn').addEventListener('click', saveCurrentPreset);
+
+      // === Load Saved Settings ===
+      function loadSavedSettings() {
+        try {
+          const savedFooter = localStorage.getItem('halwani_footer');
+          if (savedFooter) footerInput.value = savedFooter;
+          
+          const savedNameSize = localStorage.getItem('halwani_nameSize');
+          if (savedNameSize) nameRange.value = savedNameSize;
+          
+          const savedPriceSize = localStorage.getItem('halwani_priceSize');
+          if (savedPriceSize) priceRange.value = savedPriceSize;
+          
+          const savedFooterSize = localStorage.getItem('halwani_footerSize');
+          if (savedFooterSize) footerRange.value = savedFooterSize;
+          
+          const savedPrinter = localStorage.getItem('halwani_printer');
+          if (savedPrinter) printerModel.value = savedPrinter;
+          
+          const savedOrientation = localStorage.getItem('halwani_orientation');
+          if (savedOrientation) printOrientation.value = savedOrientation;
+          
+          const savedDpi = localStorage.getItem('halwani_dpi');
+          if (savedDpi) printDpi.value = savedDpi;
+          
+          const savedDensity = localStorage.getItem('halwani_density');
+          if (savedDensity) printDensity.value = savedDensity;
+        } catch (e) {
+          console.log('No saved settings');
+        }
+        
+        updateFontSizes();
+        updatePrintAreaSize();
+        refreshAllDisplays();
+      }
+
+      // === Save Settings on Unload ===
+      window.addEventListener('beforeunload', () => {
+        try {
+          localStorage.setItem('halwani_footer', footerInput.value);
+          localStorage.setItem('halwani_nameSize', nameRange.value);
+          localStorage.setItem('halwani_priceSize', priceRange.value);
+          localStorage.setItem('halwani_footerSize', footerRange.value);
+          localStorage.setItem('halwani_printer', printerModel.value);
+          localStorage.setItem('halwani_orientation', printOrientation.value);
+          localStorage.setItem('halwani_dpi', printDpi.value);
+          localStorage.setItem('halwani_density', printDensity.value);
+        } catch (e) {}
+      });
+
+      // === Print Event Handlers ===
+      window.onbeforeprint = () => {
+        const printOutput = document.getElementById('thermal-print-output');
+        refreshAllDisplays();
+        updateFontSizes();
+        updatePrintAreaSize();
+        printOutput.style.display = 'flex';
+        printOutput.style.visibility = 'visible';
+        printOutput.style.position = 'absolute';
+        printOutput.style.top = '0';
+        printOutput.style.left = '0';
+        printOutput.style.margin = '0';
+        printOutput.style.border = 'none';
+        printOutput.style.borderRadius = '0';
+        
+        // تحديث نمط الصفحة
+        const orientation = printOrientation.value;
+        const dynamicStyle = document.createElement('style');
+        dynamicStyle.id = 'dynamic-print-style';
+        dynamicStyle.textContent = `
+          @media print {
+            @page {
+              size: ${orientation === 'vertical' ? '40mm 20mm' : '20mm 40mm'} !important;
+              margin: 0 !important;
+            }
+          }
+        `;
+        const oldStyle = document.getElementById('dynamic-print-style');
+        if (oldStyle) oldStyle.remove();
+        document.head.appendChild(dynamicStyle);
+      };
+      
+      window.onafterprint = () => {
+        const printOutput = document.getElementById('thermal-print-output');
+        printOutput.style.display = 'none';
+        printOutput.style.visibility = 'hidden';
+        printOutput.style.position = 'absolute';
+      };
+
+      // === Keyboard Shortcuts ===
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'p') {
+          e.preventDefault();
+          executePrint();
+        }
+        if (e.ctrlKey && e.key === 's') {
+          e.preventDefault();
+          saveCurrentPreset();
+        }
+        if (e.ctrlKey && e.key === 'e') {
+          e.preventDefault();
+          showPreview();
+        }
+      });
+
+      // === Initialize ===
+      isSyncMode = true;
+      syncToggle.checked = true;
+      bottomNameInput.disabled = true;
+      bottomPriceInput.disabled = true;
+      loadSavedSettings();
+      updatePrintAreaSize();
+      
+      console.log('✅ حلواني بندق - نظام طباعة ليبل 4×2 سم عمودي | XPrinter');
+      console.log('📐 المقاس: 40×20 مم (ملصقان عمودياً كل منهما 40×10 مم)');
+      console.log('⌨️ اختصارات: Ctrl+P طباعة | Ctrl+S حفظ | Ctrl+E معاينة');
+    })();
+  </script>
+</body>
+</html>
