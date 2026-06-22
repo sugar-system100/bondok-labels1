@@ -2,460 +2,135 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-  <title>حلواني بندق Pro | طباعة ملصقات مرنة | XPrinter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>حلواني بندق | الطباعة كصورة</title>
   
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Poppins:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  
   <script src="https://cdn.tailwindcss.com"></script>
   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
   <style>
-    * {
-      font-family: 'Cairo', sans-serif;
-      -webkit-tap-highlight-color: transparent;
-      box-sizing: border-box;
-    }
+    * { font-family: 'Cairo', sans-serif; box-sizing: border-box; }
+    body { background: #fdfcfb; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
     
-    body {
-      background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 1rem;
-    }
-
-    .glass-panel {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(217, 119, 6, 0.2);
-      box-shadow: 0 25px 50px -12px rgba(180, 120, 30, 0.15);
-    }
-
-    .printer-setup-panel, .product-data-panel {
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid rgba(229, 231, 235, 1);
-      border-radius: 1.5rem;
-    }
-
-    /* معاينة الستيكر داخل واجهة الاستخدام */
-    .thermal-paper-preview {
-      background-color: #fffdf5;
-      background-image: 
-        radial-gradient(circle at 15% 15%, rgba(217, 119, 6, 0.05) 1px, transparent 1px),
-        radial-gradient(circle at 85% 85%, rgba(217, 119, 6, 0.03) 1px, transparent 1px);
-      background-size: 10px 10px;
-      border: 2px dashed rgba(217, 119, 6, 0.4);
-      border-radius: 20px;
-      transition: all 0.3s ease;
-      position: relative;
-    }
-
-    .sticker-container-mock {
+    /* تصميم الستيكر الأساسي الذي سيتم تحويله لصورة */
+    #labelToRender {
+      width: 30mm;
+      height: 25mm;
       background: white;
-      border: 1px solid #e2d1c3;
-      border-radius: 10px;
-      padding: 5px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      overflow: hidden;
-      direction: rtl;
+      border: 1px solid #000; /* إطار خفيف لضمان الحدود */
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5mm;
+      box-sizing: border-box;
+      position: absolute;
+      left: -9999px; /* إخفاؤه عن المستخدم، نستخدمه فقط للتصوير */
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+    .right-section { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: right; overflow: hidden; padding-left: 1mm; }
+    .price-section { border: 1.5px solid #000; border-radius: 2px; width: 33%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: white; }
+    
+    .text-title { font-size: 10pt; font-weight: 900; color: #000; line-height: 1.1; white-space: nowrap; }
+    .text-weight { font-size: 8pt; font-weight: 900; color: #000; margin: 1mm 0; }
+    .text-footer { font-size: 6pt; font-weight: 700; color: #000; line-height: 1; }
+    
+    .text-price { font-size: 15pt; font-weight: 900; color: #000; line-height: 1; margin-bottom: -1mm; }
+    .text-currency { font-size: 6.5pt; font-weight: 900; color: #000; }
 
-    .btn-action {
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    /* ستايل الطباعة الفعلي (يطبع الصورة فقط) */
+    @media print {
+      body * { visibility: hidden !important; }
+      #printArea, #printArea * { visibility: visible !important; }
+      #printArea {
+        position: absolute; top: 0; left: 0;
+        width: 30mm; height: 25mm;
+        margin: 0; padding: 0;
+        display: flex; justify-content: center; align-items: center;
+      }
+      #printArea img {
+        width: 30mm !important; 
+        height: 25mm !important;
+        object-fit: contain;
+      }
+      @page { size: 30mm 25mm; margin: 0; }
     }
-    .btn-action:hover {
-      box-shadow: 0 6px 18px rgba(245, 158, 11, 0.5);
-      transform: translateY(-1px);
-    }
-    .btn-action:active { transform: scale(0.97); }
-
-    /* مفاتيح التبديل (Segmented Controls) */
-    .seg-input { display: none; }
-    .seg-label {
-      cursor: pointer;
-      background: #f9fafb;
-      color: #4b5563;
-      border: 1px solid #e5e7eb;
-      transition: all 0.2s;
-    }
-    .seg-input:checked + .seg-label {
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      color: white;
-      font-weight: bold;
-      border-color: #d97706;
-    }
-    .seg-label:first-of-type { border-top-right-radius: 0.75rem; border-bottom-right-radius: 0.75rem; }
-    .seg-label:last-of-type { border-top-left-radius: 0.75rem; border-bottom-left-radius: 0.75rem; border-right: none; }
-
-    input[type="number"], input[type="text"] {
-      background: rgba(255,255,255,0.8);
-      border-color: #e2d1c3;
-    }
-    input:focus { ring: 2px; ring-color: #f59e0b; border-color: #f59e0b; }
-
-    /* === ستايلات الطباعة الديناميكية === */
-    /* يتم إنشاء وسم <style> خاص بـ @media print عبر الـ JavaScript ليناسب إعدادات المستخدم */
   </style>
 </head>
 <body>
 
-  <div class="w-full max-w-6xl glass-panel rounded-3xl overflow-hidden animate-fadeIn mb-10">
-    
-    <div class="bg-gradient-to-l from-amber-600 to-amber-700 px-6 py-5 flex items-center justify-between border-b border-amber-800/30 shadow-lg">
-      <div class="flex items-center gap-4">
-        <div class="bg-white/10 backdrop-blur-sm p-3 rounded-2xl border border-white/20">
-          <i class="fas fa-tag text-white text-3xl"></i>
-        </div>
-        <div>
-          <h1 class="text-2xl md:text-3xl font-black text-white tracking-tight">حلواني بندق Pro</h1>
-          <p class="text-amber-100 text-xs font-semibold opacity-90">نظام طباعة ملصقات الأسعار المرن | XPrinter Fix</p>
-        </div>
+  <div class="w-full max-w-xl bg-white border border-gray-200 rounded-2xl p-6 shadow-xl text-center">
+    <h1 class="text-2xl font-black text-amber-700 mb-2">طباعة الملصق كصورة (الحل النهائي)</h1>
+    <p class="text-sm text-gray-500 mb-6 font-bold">هذا الكود يحول التصميم إلى صورة عالية الدقة لمنع الطابعة من تخريب التنسيق.</p>
+
+    <div class="space-y-4 mb-6 text-right">
+      <div>
+        <label class="text-xs font-bold text-gray-600">اسم المنتج</label>
+        <input type="text" id="inpName" value="قرقش بالعجوة" class="w-full border rounded-lg px-3 py-2 font-bold focus:border-amber-500 outline-none">
       </div>
-      <div class="flex items-center gap-2">
-          <span class="bg-amber-900/40 text-amber-100 text-xs font-bold px-4 py-2 rounded-full border border-amber-500/30">
-            <i class="fas fa-print mr-1"></i> XPrinter Series
-          </span>
+      <div>
+        <label class="text-xs font-bold text-gray-600">الوزن</label>
+        <input type="text" id="inpWeight" value="500 جرام" class="w-full border rounded-lg px-3 py-2 font-bold focus:border-amber-500 outline-none">
+      </div>
+      <div>
+        <label class="text-xs font-bold text-gray-600">السعر</label>
+        <input type="text" id="inpPrice" value="145" class="w-full border rounded-lg px-3 py-2 font-black text-amber-700 focus:border-amber-500 outline-none">
       </div>
     </div>
 
-    <div class="flex flex-col lg:flex-row">
-      
-      <div class="w-full lg:w-[50%] p-5 md:p-6 space-y-6 border-b lg:border-b-0 lg:border-l border-amber-200/50">
-        
-        <div class="printer-setup-panel p-5">
-          <div class="flex items-center gap-2.5 mb-4 text-amber-800">
-            <i class="fas fa-drafting-compass text-lg"></i>
-            <h3 class="font-black text-sm">📐 إعدادات المقاس والاتجاه</h3>
-          </div>
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label class="text-[11px] font-bold text-gray-600 mb-1 block">📏 عرض الاستيكر (ملم)</label>
-              <input type="number" id="stickerWidth" value="30" min="15" max="100" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-center font-black text-gray-800 text-sm focus:ring-amber-500">
-            </div>
-            <div>
-              <label class="text-[11px] font-bold text-gray-600 mb-1 block">📏 ارتفاع الاستيكر (ملم)</label>
-              <input type="number" id="stickerHeight" value="25" min="15" max="100" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-center font-black text-gray-800 text-sm focus:ring-amber-500">
-            </div>
-          </div>
-          <div>
-            <label class="text-[11px] font-bold text-gray-600 mb-2 block">🔃 اتجاه الطباعة في المتصفح</label>
-            <div class="flex border border-gray-300 rounded-xl overflow-hidden shadow-inner">
-              <input type="radio" id="orientationPortrait" name="orientation" value="portrait" class="seg-input" checked>
-              <label for="orientationPortrait" class="seg-label flex-1 text-center py-2.5 text-xs font-black rounded-l-none">طولي (أعلى->أسفل)</label>
-              
-              <input type="radio" id="orientationLandscape" name="orientation" value="landscape" class="seg-input">
-              <label for="orientationLandscape" class="seg-label flex-1 text-center py-2.5 text-xs font-black rounded-r-none">أفقي (يسار->يمين)</label>
-            </div>
-          </div>
-        </div>
+    <button id="printBtn" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-black py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+      <i class="fas fa-print"></i> تجهيز الصورة والطباعة
+    </button>
+  </div>
 
-        <div class="product-data-panel p-5">
-          <div class="flex items-center gap-2.5 mb-4 text-amber-800">
-            <i class="fas fa-edit text-lg"></i>
-            <h3 class="font-black text-sm">🏷️ بيانات المنتج</h3>
-          </div>
-          <div class="space-y-3.5">
-            <div>
-              <label class="text-[11px] font-bold text-gray-600 mb-1 block">اسم المنتج</label>
-              <input type="text" id="productName" value="قرقش بالعجوة" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold focus:ring-amber-500 bg-white">
-            </div>
-            <div>
-              <label class="text-[11px] font-bold text-gray-600 mb-1 block">⚖️ وزن المنتج</label>
-              <input type="text" id="productWeight" value="500 جرام" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-amber-900 focus:ring-amber-500 bg-white" placeholder="مثال: 1 كجم أو 500 جرام">
-            </div>
-            <div>
-              <label class="text-[11px] font-bold text-gray-600 mb-1 block">السعر (ج.م)</label>
-              <input type="number" id="productPrice" value="145" class="w-full border border-gray-300 rounded-xl px-3.5 py-3 text-center font-black text-2xl text-amber-700 focus:ring-amber-500 bg-white shadow-inner">
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3.5">
-          <button id="printBtn" class="btn-action bg-gradient-to-br from-amber-500 to-amber-600 text-white font-extrabold py-4 rounded-xl flex items-center justify-center gap-2.5 text-sm border-b-4 border-amber-700">
-            <i class="fas fa-print text-lg"></i> طباعة الآن (Ctrl+P)
-          </button>
-          <button id="previewBtn" class="bg-white border-2 border-amber-400 text-amber-700 font-extrabold py-4 rounded-xl flex items-center justify-center gap-2.5 hover:bg-amber-50 text-sm">
-            <i class="fas fa-eye text-lg"></i> تحديث المعاينة
-          </button>
-        </div>
-        
-        <div class="text-[10px] text-gray-500 text-center bg-white border border-amber-100 p-3 rounded-xl shadow-inner font-semibold">
-          💡 جرب تغيير اتجاه الطباعة إذا خرجت الطباعة في اتجاه خاطئ. تأكد من ضبط هوامش الطباعة على "None".
-        </div>
-      </div>
-
-      <div class="w-full lg:w-[50%] p-5 md:p-6 flex flex-col items-center bg-gradient-to-br from-amber-50/70 to-white">
-        <div class="thermal-paper-preview p-5 w-full flex flex-col items-center h-full min-h-[400px]">
-          <div class="text-center mb-6 w-full flex items-center justify-center gap-2">
-            <i class="fas fa-mobile-alt text-amber-600"></i>
-            <span id="previewTitle" class="bg-amber-100 text-amber-900 text-[11px] font-black px-4 py-2 rounded-full inline-flex border border-amber-200">معاينة استيكر 30×25 ملم</span>
-          </div>
-          
-          <div id="previewContainerMock" class="sticker-container-mock flex items-center">
-            <div class="w-full h-full p-1.5 flex flex-row items-center justify-between gap-1.5 border border-amber-200/50 rounded-md bg-white">
-              
-              <div class="flex-1 flex flex-col justify-between h-full text-right overflow-hidden gap-1">
-                <div id="mockProductName" class="font-black text-gray-900 leading-tight" style="font-size: 13px;">قرقش بالعجوة</div>
-                <div id="mockProductWeight" class="font-semibold text-amber-900 bg-amber-50 px-2 py-0.5 rounded-sm inline-block self-start" style="font-size: 9px; line-height: 1.1;">500 جرام</div>
-                <div class="font-bold text-gray-500 truncate" style="font-size: 8px; line-height: 1.1;">حلواني بندق - فرع النزهة</div>
-              </div>
-              
-              <div class="border-2 border-gray-900 rounded-lg w-[32%] py-2 text-center bg-white shadow flex-shrink-0 flex flex-col items-center justify-center h-full">
-                <span id="mockProductPrice" class="font-black text-lg block leading-none text-black">145</span>
-                <span class="text-[8px] font-black block -mt-0.5 text-gray-800">ج.م</span>
-              </div>
-              
-            </div>
-          </div>
-          
-          <div class="mt-auto text-center space-y-1 w-full pt-6">
-            <p id="sizeStatus" class="text-[11px] text-gray-600 font-bold">📐 المقاس النشط: 30 × 25 ملم</p>
-          </div>
-        </div>
-      </div>
+  <div id="labelToRender">
+    <div class="right-section">
+      <div id="renderName" class="text-title">قرقش بالعجوة</div>
+      <div id="renderWeight" class="text-weight">500 جرام</div>
+      <div class="text-footer">حلواني بندق - فرع النزهة</div>
+    </div>
+    <div class="price-section">
+      <span id="renderPrice" class="text-price">145</span>
+      <span class="text-currency">ج.م</span>
     </div>
   </div>
 
-  <div id="thermal-print-output" style="display: none; visibility: hidden;">
-    <div class="print-sticker-single">
-      <div class="w-full h-full p-1 flex flex-row items-center justify-between gap-1 border-0.5 border-black rounded-md bg-white overflow-hidden">
-        
-        <div class="flex-1 flex flex-col justify-center h-full text-right overflow-hidden gap-0.5 pt-0.5">
-          <div id="printProductName" class="print-product-name" style="font-size: 11pt;">قرقش بالعجوة</div>
-          <div id="printProductWeight" class="print-product-weight" style="font-size: 7.5pt;">500 جرام</div>
-          <div class="print-footer-text" style="font-size: 6pt;">حلواني بندق - فرع النزهة</div>
-        </div>
-        
-        <div class="border-1.5 border-black rounded-md w-[32%] py-1.5 text-center bg-white flex-shrink-0 flex flex-col items-center justify-center h-full overflow-hidden">
-          <span id="printProductPrice" class="font-black" style="font-size: 16pt;">145</span>
-          <span style="font-size: 7pt; font-weight: 900;">ج.م</span>
-        </div>
-        
-      </div>
-    </div>
-  </div>
-
-  <div class="text-center text-[11px] text-gray-400 py-3 mt-auto max-w-6xl w-full">
-    © حلواني بندق Pro | م/ محمود سلامه | نظام مرن متوافق مع XPrinter
-  </div>
+  <div id="printArea"></div>
 
   <script>
-    (function() {
-      // DOM Elements
-      const widthInput = document.getElementById('stickerWidth');
-      const heightInput = document.getElementById('stickerHeight');
-      const pNameInput = document.getElementById('productName');
-      const pWeightInput = document.getElementById('productWeight');
-      const pPriceInput = document.getElementById('productPrice');
+    document.getElementById('printBtn').addEventListener('click', () => {
+      // 1. تحديث البيانات
+      document.getElementById('renderName').textContent = document.getElementById('inpName').value;
+      document.getElementById('renderWeight').textContent = document.getElementById('inpWeight').value;
+      document.getElementById('renderPrice').textContent = document.getElementById('inpPrice').value;
+
+      // إخفاء الوزن إذا كان فارغاً
+      const weightElem = document.getElementById('renderWeight');
+      weightElem.style.display = document.getElementById('inpWeight').value ? 'block' : 'none';
+
+      // 2. تحويل العنصر إلى صورة
+      const label = document.getElementById('labelToRender');
       
-      // Preview Elements
-      const previewContainer = document.getElementById('previewContainerMock');
-      const previewTitle = document.getElementById('previewTitle');
-      const sizeStatus = document.getElementById('sizeStatus');
-      const mockName = document.getElementById('mockProductName');
-      const mockWeight = document.getElementById('mockProductWeight');
-      const mockPrice = document.getElementById('mockProductPrice');
-      
-      // Print Output Elements
-      const printName = document.getElementById('printProductName');
-      const printWeight = document.getElementById('printProductWeight');
-      const printPrice = document.getElementById('printProductPrice');
-
-      // Update All Displays
-      function refreshAll() {
-        // البيانات النصية
-        const nameVal = pNameInput.value.trim() || 'منتج جديد';
-        const weightVal = pWeightInput.value.trim();
-        const priceVal = pPriceInput.value.trim() || '0';
+      // رفع دقة الصورة (Scale: 4) لضمان طباعة واضحة جداً
+      html2canvas(label, { scale: 4, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
         
-        // مقاسات الاستيكر
-        let wVal = parseInt(widthInput.value) || 30;
-        let hVal = parseInt(heightInput.value) || 25;
+        // 3. مسح منطقة الطباعة القديمة ووضع الصورة الجديدة
+        const printArea = document.getElementById('printArea');
+        printArea.innerHTML = ''; 
         
-        // اتجاه الطباعة
-        const orientation = document.querySelector('input[name="orientation"]:checked').value;
+        const img = document.createElement('img');
+        img.src = canvas.toDataURL('image/png');
+        printArea.appendChild(img);
 
-        // --- 1. تحديث المعاينة داخل الصفحة (Mock) ---
-        mockName.textContent = nameVal;
-        mockPrice.textContent = priceVal;
-        
-        // معالجة الوزن (إخفاء العنصر إذا كان فارغاً)
-        if(weightVal) {
-          mockWeight.textContent = "⚖️ الوزن: " + weightVal;
-          mockWeight.style.display = 'inline-block';
-        } else {
-          mockWeight.style.display = 'none';
-        }
-
-        // تحديث مقاس المعاينة (تناسبي: 1 ملم = 3 بكسل للعرض، ويحسب الارتفاع بناء على التناسب)
-        previewContainer.style.width = (wVal * 3) + 'px';
-        previewContainer.style.height = (hVal * 3) + 'px';
-        
-        previewTitle.textContent = `معاينة استيكر ${wVal}×${hVal} ملم (${orientation == 'landscape' ? 'أفقي' : 'طولي'})`;
-        sizeStatus.textContent = `📐 المقاس النشط: ${wVal} × ${hVal} ملم`;
-
-        // --- 2. تحديث مخرجات الطباعة المخفية ---
-        printName.textContent = nameVal;
-        printPrice.textContent = priceVal;
-        if(weightVal) {
-          printWeight.textContent = "الوزن صافي: " + weightVal;
-          printWeight.style.display = 'block';
-        } else {
-          printWeight.style.display = 'none';
-        }
-      }
-
-      // وظيفة إنشاء ستايل الطباعة الديناميكي
-      function generateDynamicPrintCSS() {
-        const wVal = parseInt(widthInput.value) || 30;
-        const hVal = parseInt(heightInput.value) || 25;
-        const orientation = document.querySelector('input[name="orientation"]:checked').value;
-
-        // إزالة أي وسم ستايل قديم
-        const oldStyle = document.getElementById('dynamicPrintStyle');
-        if (oldStyle) oldStyle.remove();
-
-        // إنشاء ستايل جديد
-        const style = document.createElement('style');
-        style.id = 'dynamicPrintStyle';
-        
-        // بناء قواعد CSS للطباعة بناءً على مدخلات المستخدم
-        style.textContent = `
-          @media print {
-            html, body {
-              margin: 0 !important;
-              padding: 0 !important;
-              width: ${wVal}mm !important;
-              height: ${hVal}mm !important;
-              overflow: hidden !important;
-              font-family: 'Cairo', sans-serif !important;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-            }
-            
-            body * {
-              visibility: hidden !important;
-            }
-            
-            @page {
-              size: ${wVal}mm ${hVal}mm ${orientation} !important;
-              margin: 0 !important;
-            }
-            
-            #thermal-print-output, 
-            #thermal-print-output * {
-              visibility: visible !important;
-            }
-            
-            #thermal-print-output {
-              position: absolute !important;
-              top: 0 !important;
-              left: 0 !important;
-              width: ${wVal}mm !important;
-              height: ${hVal}mm !important;
-              margin: 0 !important;
-              padding: 0.5mm !important; /* هوامش داخلية خفيفة */
-              background: white !important;
-              display: flex !important;
-              flex-direction: row !important;
-              align-items: center !important;
-              justify-content: center !important;
-              overflow: hidden !important;
-              direction: rtl !important;
-              box-sizing: border-box !important;
-            }
-            
-            .print-sticker-single {
-              width: 100% !important;
-              height: 100% !important;
-              display: flex !important;
-              flex-direction: row !important;
-              background: white !important;
-              page-break-inside: avoid !important;
-              direction: rtl !important;
-            }
-
-            .print-product-name {
-              font-weight: 900 !important;
-              color: black !important;
-              line-height: 1.1 !important;
-              margin-bottom: 1.5mm !important;
-              white-space: nowrap !important;
-              text-align: right !important;
-            }
-
-            .print-product-weight {
-              font-weight: 700 !important;
-              color: black !important;
-              margin-bottom: 1mm !important;
-              text-align: right !important;
-            }
-
-            .print-footer-text {
-              font-weight: 600 !important;
-              color: black !important;
-              line-height: 1 !important;
-              text-align: right !important;
-            }
-          }
-        `;
-        document.head.appendChild(style);
-      }
-
-      function executePrint() {
-        refreshAll();
-        generateDynamicPrintCSS(); // إنشاء الإعدادات الديناميكية قبل الطباعة
-        
-        // إظهار منطقة الطباعة المخفية
-        const printOutput = document.getElementById('thermal-print-output');
-        printOutput.style.display = 'block';
-        printOutput.style.visibility = 'visible';
-        
+        // 4. فتح نافذة الطباعة
         setTimeout(() => {
-          window.print(); // فتح نافذة الطباعة
-          setTimeout(() => {
-            // إخفاء منطقة الطباعة بعد الإرسال
-            printOutput.style.display = 'none';
-            printOutput.style.visibility = 'hidden';
-          }, 500);
-        }, 100);
-      }
-
-      // Event Listeners
-      pNameInput.addEventListener('input', refreshAll);
-      pWeightInput.addEventListener('input', refreshAll);
-      pPriceInput.addEventListener('input', refreshAll);
-      widthInput.addEventListener('input', refreshAll);
-      heightInput.addEventListener('input', refreshAll);
-      document.querySelectorAll('input[name="orientation"]').forEach(input => {
-          input.addEventListener('change', refreshAll);
+          window.print();
+        }, 300);
       });
-      
-      document.getElementById('previewBtn').addEventListener('click', refreshAll);
-      document.getElementById('printBtn').addEventListener('click', executePrint);
-      
-      // Ctrl+P shortcut
-      document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.key === 'p') {
-          e.preventDefault();
-          executePrint();
-        }
-      });
-      
-      // Initialize
-      refreshAll();
-    })();
+    });
   </script>
 </body>
 </html>
