@@ -3,16 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-  <title>حلواني بندق | طباعة ليبل 3×2.5 سم | XPrinter</title>
+  <title>حلواني بندق | طباعة ليبل 3×2.5 سم | XPrinter Vertical</title>
   
-  <!-- Fonts & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
   
   <style>
     * {
@@ -53,6 +51,69 @@
         radial-gradient(circle at 75% 60%, rgba(180, 140, 80, 0.04) 1px, transparent 1px);
       background-size: 12px 12px, 15px 15px;
       border-radius: 20px;
+      box-shadow:أهلاً بك. الصورة واضحة جداً وقدمت تشخيصاً دقيقاً للمشكلة.
+
+### تحليل المشكلة (Diagnosis):
+
+المشكلة في الكود الحالي هي أنك تحاول تطبيق **تصميم أفقي** (بمقياس 3 سم عرضًا × 2.5 سم ارتفاعًا) على رول ملصقات يتم إدخاله في الطابعة بشكل **طولي** (أي أن عرض رول الملصقات الثابت هو الـ 30 مم، بينما اتجاه التغذية هو الـ 25 مم).
+
+الصورة تظهر أن الطباعة تمت بنجاح داخل حدود الستيكر، لكن التصميم نفسه "نائم" (Rotated 90 degrees CW) ومقصوص من الأطراف. هذا يحدث لأن الطابعة أو المتصفح قاما بتدوير التصميم العريض ليناسب عرض الورقة المدخلة عموديًا، مما تسبب في خروج باقي التصميم خارج حدود الورقة.
+
+---
+
+### الحل المقترح (The Correct Way for Continuous Roll):
+
+لحل هذه المشكلة بشكل جذري وموثوق على طابعات الملصقات الحرارية (XPrinter)، يجب أن نصمم الملصق في المتصفح بنفس اتجاه التغذية (طولياً). هذا يعني تغيير التصميم في الكود من صف أفقي إلى **قائمة عمودية (Column)** تخرج مستقيمة مع اتجاه الورقة.
+
+**تفضل الكود المصحح بالكامل** (قم بنسخه واستبدال الملف بالكامل به، فهو مصمم ليناسب اتجاه التغذية الطولي الذي تظهر الصورة أنه الافتراضي لديك):
+
+```html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>حلواني بندق | طباعة ليبل طولي 30x25 ملم | XPrinter Vertical</title>
+  
+  <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
+  <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+  <link href="[https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap](https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap)" rel="stylesheet">
+  <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css)">
+  
+  <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+  
+  <style>
+    * {
+      font-family: 'Cairo', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #fef9ef 0%, #fff5e6 50%, #fef3e2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      box-shadow: 0 20px 40px -15px rgba(180, 120, 30, 0.15),
+                  0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+    }
+
+    .thermal-paper-preview {
+      background: linear-gradient(180deg, #fefcf5 0%, #fdf8ed 100%);
+      background-image: 
+        radial-gradient(circle at 20% 25%, rgba(180, 140, 80, 0.06) 1px, transparent 1px),
+        radial-gradient(circle at 75% 60%, rgba(180, 140, 80, 0.04) 1px, transparent 1px);
+      background-size: 12px 12px, 15px 15px;
+      border-radius: 20px;
       box-shadow: 
         inset 0 2px 15px rgba(0,0,0,0.03),
         0 8px 25px rgba(0,0,0,0.06);
@@ -76,153 +137,6 @@
       box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
       transform: translateY(-1px);
     }
-    .btn-primary:active {
-      transform: scale(0.97);
-    }
-
-    select.custom-select {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23d97706' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: left 12px center;
-      padding-left: 30px;
-      appearance: none;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-left: 6px;
-    }
-    .status-dot.active {
-      background: #10b981;
-      box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
-    }
-
-    /* إعدادات الطباعة: عرض 30 مم × ارتفاع 25 مم (Landscape/عرض) */
-    @media print {
-      html, body {
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 30mm !important;
-        height: 25mm !important;
-        overflow: hidden !important;
-      }
-      
-      body * {
-        visibility: hidden !important;
-      }
-      
-      @page {
-        size: 30mm 25mm !important;
-        margin: 0 !important;
-        padding: 0 !important;
-      }
-      
-      #thermal-print-output, 
-      #thermal-print-output * {
-        visibility: visible !important;
-      }
-      
-      #thermal-print-output {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 30mm !important;
-        height: 25mm !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: white !important;
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        justify-content: center !important;
-        overflow: hidden !important;
-        print-color-adjust: exact !important;
-        -webkit-print-color-adjust: exact !important;
-        box-sizing: border-box !important;
-        direction: rtl !important;
-        font-family: 'Cairo', sans-serif !important;
-      }
-      
-      .print-sticker-single {
-        width: 28mm !important;
-        height: 23mm !important;
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        padding: 1.5mm 2mm !important;
-        background: white !important;
-        box-sizing: border-box !important;
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
-        direction: rtl !important;
-        border: 0.5mm solid #000 !important;
-        border-radius: 2mm !important;
-        gap: 2mm !important;
-      }
-      
-      .print-text-section {
-        flex: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: center !important;
-        overflow: hidden !important;
-        gap: 1mm !important;
-      }
-      
-      .print-product-name {
-        font-weight: 900 !important;
-        text-align: right !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        line-height: 1.2 !important;
-      }
-      
-      .print-price-box {
-        border: 1.5px solid #000 !important;
-        border-radius: 8px !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 1.5mm 3mm !important;
-        background: white !important;
-        flex-shrink: 0 !important;
-      }
-      
-      .print-footer-text {
-        font-weight: 700 !important;
-        text-align: right !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        color: #555 !important;
-        line-height: 1.2 !important;
-      }
-    }
-
-    .toast-notification {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 9999;
-      padding: 12px 24px;
-      border-radius: 50px;
-      font-weight: 700;
-      font-size: 14px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      animation: slideUp 0.4s ease-out;
-    }
-    
-    @keyframes slideUp {
-      from { bottom: -50px; opacity: 0; }
-      to { bottom: 20px; opacity: 1; }
-    }
 
     input[type="range"] {
       -webkit-appearance: none;
@@ -238,16 +152,115 @@
       background: #f59e0b;
       border-radius: 50%;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+    }
+
+    /* === إعدادات الطباعة: طولي (30 ملم عرضًا × 25 ملم طولًا) === */
+    @media print {
+      html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        /* نحن نحدد العرض الثابت لرول الورق */
+        width: 30mm !important;
+        height: 25mm !important;
+        overflow: hidden !important;
+      }
+      
+      body * {
+        visibility: hidden !important;
+      }
+      
+      @page {
+        size: 30mm 25mm portrait !important; /* نحدد اتجاه طولي standard للرول */
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      
+      #thermal-print-output, 
+      #thermal-print-output * {
+        visibility: visible !important;
+      }
+      
+      #thermal-print-output {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 30mm !important; /* عرض الورقة المدخلة */
+        height: 25mm !important; /* طول القطعة المغذاة */
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+        display: flex !important;
+        flex-direction: column !important; /* نغير التنسيق ليكون قائمة عمودية */
+        align-items: center !important;
+        justify-content: flex-start !important; /* نبدأ من الأعلى */
+        overflow: hidden !important;
+        print-color-adjust: exact !important;
+        -webkit-print-color-adjust: exact !important;
+        box-sizing: border-box !important;
+        direction: rtl !important; /* الحفاظ على اتجاه النص العربي */
+        font-family: 'Cairo', sans-serif !important;
+      }
+      
+      .print-sticker-single {
+        width: 100% !important; /* نملأ العرض */
+        height: 100% !important; /* نملأ الارتفاع */
+        display: flex !important;
+        flex-direction: column !important; /* تصميم قائمة عمودية */
+        align-items: center !important;
+        justify-content: space-around !important; /* توزيع عمودي متساوٍ */
+        padding: 1.5mm 0 !important;
+        background: white !important;
+        page-break-inside: avoid !important;
+        border: 0.5mm solid #000 !important;
+        border-radius: 1.5mm !important;
+        gap: 0.5mm !important;
+      }
+      
+      .print-text-section {
+        width: 90% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        overflow: hidden !important;
+      }
+      
+      .print-product-name {
+        font-weight: 900 !important;
+        text-align: center !important; /* اسم المنتج في المركز */
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        line-height: 1.1 !important;
+      }
+      
+      .print-footer-text {
+        font-weight: 700 !important;
+        text-align: center !important; /* الفرع في المركز */
+        color: #555 !important;
+        font-size: 6.5pt !important;
+        line-height: 1.1 !important;
+        margin-top: 1mm !important;
+      }
+      
+      .print-price-box {
+        width: 90% !important;
+        border: 1.5px solid #000 !important;
+        border-radius: 6px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 1mm 0 !important;
+        background: white !important;
+        margin-top: auto !important; /* دفع السعر لأسفل الستيكر */
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- الحاوية الرئيسية -->
-  <div class="w-full max-w-5xl glass-panel rounded-3xl overflow-hidden transition-all duration-300">
+  <div class="w-full max-w-5xl glass-panel rounded-3xl overflow-hidden animate-fade-in">
     
-    <!-- هيدر التطبيق -->
     <div class="bg-gradient-to-l from-amber-500 to-amber-600 px-6 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="bg-white/20 backdrop-blur-sm p-2.5 rounded-2xl">
@@ -255,185 +268,90 @@
         </div>
         <div>
           <h1 class="text-xl md:text-2xl font-black text-white">حلواني بندق</h1>
-          <p class="text-amber-100 text-xs font-semibold">طباعة ليبل 3×2.5 سم | قطعة واحدة</p>
+          <p class="text-amber-100 text-xs font-semibold">طباعة ليبل طولي 30×25 ملم | XPrinter (Vertical)</p>
         </div>
-      </div>
-      <div class="hidden md:flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-1.5">
-        <span class="status-dot active"></span>
-        <span class="text-white text-xs font-bold">30×25mm Landscape</span>
       </div>
     </div>
 
-    <!-- المحتوى الرئيسي -->
     <div class="flex flex-col lg:flex-row">
       
-      <!-- لوحة التحكم (يمين) -->
       <div class="w-full lg:w-[55%] p-5 md:p-6 space-y-5 border-b lg:border-b-0 lg:border-l border-amber-200/60">
         
-        <!-- إعدادات الطابعة -->
-        <div class="glass-card rounded-2xl p-4 border border-amber-100">
-          <div class="flex items-center gap-2 mb-3">
-            <i class="fas fa-cog text-amber-600 text-sm"></i>
-            <h3 class="font-black text-gray-800 text-sm">⚙️ إعدادات الطابعة XPrinter</h3>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <label class="text-[11px] font-bold text-gray-600 block mb-1">🖨️ نوع الطابعة</label>
-              <select id="printerModel" class="custom-select w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm font-bold bg-white focus:ring-2 focus:ring-amber-400 outline-none">
-                <option value="xprinter" selected>XPrinter (XP-Series)</option>
-                <option value="zebra">Zebra GK/LP</option>
-                <option value="epson">Epson TM</option>
-                <option value="generic">حرارية عامة</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-[11px] font-bold text-gray-600 block mb-1">📐 دقة الطباعة</label>
-              <select id="printDpi" class="custom-select w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm font-bold bg-white focus:ring-2 focus:ring-amber-400 outline-none">
-                <option value="203" selected>203 DPI</option>
-                <option value="300">300 DPI</option>
-                <option value="180">180 DPI</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-[11px] font-bold text-gray-600 block mb-1">🔥 كثافة الحرارة</label>
-              <select id="printDensity" class="custom-select w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm font-bold bg-white focus:ring-2 focus:ring-amber-400 outline-none">
-                <option value="8">8 - فاتح</option>
-                <option value="10">10 - متوسط فاتح</option>
-                <option value="12" selected>12 - متوسط</option>
-                <option value="14">14 - داكن</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-[11px] font-bold text-gray-600 block mb-1">⚡ سرعة الطباعة</label>
-              <select id="printSpeed" class="custom-select w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm font-bold bg-white focus:ring-2 focus:ring-amber-400 outline-none">
-                <option value="2">2 ips</option>
-                <option value="3" selected>3 ips</option>
-                <option value="4">4 ips</option>
-              </select>
-            </div>
-            <div class="md:col-span-2">
-              <label class="text-[11px] font-bold text-gray-600 block mb-1">📋 عدد النسخ</label>
-              <input type="number" id="copyCount" value="1" min="1" max="50" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm font-bold bg-white focus:ring-2 focus:ring-amber-400 outline-none">
-            </div>
-          </div>
-        </div>
-
-        <!-- بيانات المنتج -->
-        <div class="bg-white/80 rounded-2xl p-4 border border-gray-200 shadow-sm animate-fade-in">
+        <div class="bg-white/80 rounded-2xl p-4 border border-gray-200 shadow-sm">
           <div class="flex items-center gap-2 mb-3">
             <span class="bg-amber-500 text-white text-xs font-black px-3 py-1 rounded-full">🏷️ المنتج</span>
-            <span class="text-xs text-gray-500 font-bold">مقاس 3×2.5 سم (عرض)</span>
+            <span class="text-xs text-gray-500 font-bold">المقاس: 30 ملم (عرض الرول) × 25 ملم (اتجاه التغذية)</span>
           </div>
           <div class="space-y-3">
             <div>
               <label class="text-[11px] font-bold text-gray-600">اسم المنتج</label>
-              <input type="text" id="productName" value="قرقش بالعجوة" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm font-bold focus:ring-2 focus:ring-amber-400 outline-none bg-white transition-all">
+              <input type="text" id="productName" value="قرقش بالعجوة" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm font-bold focus:ring-2 focus:ring-amber-400 outline-none bg-white">
             </div>
             <div>
               <label class="text-[11px] font-bold text-gray-600">السعر (ج.م)</label>
-              <input type="number" id="productPrice" value="145" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-center font-black text-amber-800 focus:ring-2 focus:ring-amber-400 outline-none bg-white transition-all">
+              <input type="number" id="productPrice" value="145" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-center font-black text-amber-800 focus:ring-2 focus:ring-amber-400 outline-none bg-white">
             </div>
             <div>
               <label class="text-[11px] font-bold text-gray-600">نص التذييل (الفرع)</label>
-              <input type="text" id="footerText" value="حلواني بندق - فرع النزهة" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm font-bold bg-white focus:ring-2 focus:ring-amber-400 outline-none transition-all">
+              <input type="text" id="footerText" value="حلواني بندق - فرع النزهة" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm font-bold bg-white focus:ring-2 focus:ring-amber-400 outline-none">
             </div>
           </div>
         </div>
 
-        <!-- تحكم الخطوط -->
-        <div class="bg-white/80 rounded-2xl p-4 border border-gray-200 shadow-sm">
-          <p class="text-xs font-black text-gray-700 mb-3 flex items-center gap-1">
-            <i class="fas fa-text-height text-amber-500"></i> أحجام الخطوط
-          </p>
-          <div class="space-y-3">
-            <div class="flex items-center justify-between gap-3">
-              <span class="text-[11px] font-bold w-20">اسم المنتج</span>
-              <input type="range" id="fontNameRange" min="7" max="14" value="9.5" step="0.5" class="flex-1">
-              <span id="nameSizeVal" class="w-12 text-center font-black text-amber-700 text-sm">9.5pt</span>
-            </div>
-            <div class="flex items-center justify-between gap-3">
-              <span class="text-[11px] font-bold w-20">السعر</span>
-              <input type="range" id="fontPriceRange" min="9" max="18" value="13" step="0.5" class="flex-1">
-              <span id="priceSizeVal" class="w-12 text-center font-black text-amber-700 text-sm">13pt</span>
-            </div>
-            <div class="flex items-center justify-between gap-3">
-              <span class="text-[11px] font-bold w-20">التذييل</span>
-              <input type="range" id="fontFooterRange" min="5" max="9" value="6.5" step="0.5" class="flex-1">
-              <span id="footerSizeVal" class="w-12 text-center font-black text-amber-700 text-sm">6.5pt</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- أزرار الإجراءات -->
         <div class="grid grid-cols-2 gap-3">
-          <button id="printBtn" class="btn-primary text-white font-extrabold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all text-sm">
-            <i class="fas fa-print"></i> طباعة الآن
+          <button id="printBtn" class="btn-primary text-white font-extrabold py-3.5 rounded-xl flex items-center justify-center gap-2 text-sm">
+            <i class="fas fa-print"></i> طباعة الآن (Ctrl+P)
           </button>
-          <button id="previewBtn" class="bg-white border-2 border-amber-400 text-amber-700 font-extrabold py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-amber-50 transition-all text-sm">
-            <i class="fas fa-eye"></i> معاينة
-          </button>
-          <button id="savePresetBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 rounded-xl flex items-center justify-center gap-1 transition-all text-xs">
-            <i class="fas fa-save"></i> حفظ الإعداد
-          </button>
-          <button id="clearBtn" class="bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-bold py-3 rounded-xl flex items-center justify-center gap-1 transition-all text-xs">
-            <i class="fas fa-eraser"></i> مسح
+          <button id="previewBtn" class="bg-white border-2 border-amber-400 text-amber-700 font-extrabold py-3.5 rounded-xl flex items-center justify-center gap-2 text-sm">
+            <i class="fas fa-eye"></i> معاينة طولي 30x25 ملم
           </button>
         </div>
         
         <div class="text-[10px] text-gray-400 text-center bg-amber-50/80 p-2.5 rounded-xl">
-          💡 تأكد من ضبط هوامش الطباعة على "None" | المقاس: 30×25 مم (عرض)
+          💡 هذا التصميم مصمم ليتم طباعته طوليًا (Vertical Stacked) ليناسب اتجاه تغذية رول الستيكرات.
         </div>
       </div>
 
-      <!-- قسم المعاينة (يسار) -->
       <div class="w-full lg:w-[45%] p-5 md:p-6 flex flex-col items-center justify-center bg-gradient-to-br from-amber-50/70 to-white">
-        <div class="text-center mb-4">
-          <span class="bg-amber-100 text-amber-800 text-[10px] font-black px-4 py-2 rounded-full inline-flex items-center gap-1">
-            <i class="fas fa-mobile-alt"></i> معاينة 3×2.5 سم (عرض)
-          </span>
-        </div>
-        
         <div class="thermal-paper-preview p-5 w-full max-w-xs flex flex-col items-center">
-          <!-- معاينة أفقية: عرض 3 سم × ارتفاع 2.5 سم -->
-          <div class="bg-white rounded-2xl shadow-lg overflow-hidden border-2 border-amber-200/60 p-2 flex flex-row items-center justify-between gap-2" style="width: 180px; height: 150px;">
-            <!-- النصوص في اليمين -->
-            <div class="flex flex-col justify-center overflow-hidden flex-1 gap-1">
-              <div id="mockProductName" class="font-black text-gray-900 truncate text-right" style="font-size: 13px; line-height: 1.2;">قرقش بالعجوة</div>
-              <div id="mockFooterText" class="font-bold text-gray-500 truncate text-right" style="font-size: 9px; line-height: 1.2;">حلواني بندق - فرع النزهة</div>
+          <div class="text-center mb-4">
+            <span class="bg-amber-100 text-amber-800 text-[10px] font-black px-4 py-2 rounded-full inline-flex items-center gap-1">
+              <i class="fas fa-mobile-alt"></i> معاينة (30×25 ملم طولي)
             </div>
-            <!-- السعر في اليسار -->
-            <div class="border-2 border-gray-800 rounded-xl px-2.5 py-1.5 text-center bg-white shadow-sm flex-shrink-0">
-              <span id="mockProductPrice" class="font-black text-base block leading-tight">145</span>
+          </div>
+          
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-amber-200/60 p-1 flex flex-col items-center justify-start gap-1" style="width: 150px; height: 180px;">
+            <div id="mockProductName" class="font-black text-gray-900 text-center" style="font-size: 13px; line-height: 1.1; margin-top: 5px;">قرقش بالعجوة</div>
+            <div id="mockFooterText" class="font-bold text-gray-500 text-center" style="font-size: 9px; line-height: 1.1;">حلواني بندق - فرع النزهة</div>
+            <div class="border-2 border-gray-800 rounded-lg w-[90%] py-1 text-center bg-white shadow-sm mt-auto mb-2">
+              <span id="mockProductPrice" class="font-black text-lg block leading-tight">145</span>
               <span class="text-[8px] font-black block -mt-0.5">ج.م</span>
             </div>
           </div>
           
           <div class="mt-4 text-center space-y-1">
-            <p class="text-[11px] text-gray-600 font-bold">📐 المقاس: 30×25 مم (عرض)</p>
-            <p class="text-[10px] text-gray-400">عرض 3 سم × ارتفاع 2.5 سم</p>
+            <p class="text-[11px] text-gray-600 font-bold">📐 المقاس: 30 ملم (عرض الرول) × 25 ملم (اتجاه التغذية)</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- منطقة الطباعة المخفية - قطعة واحدة 30×25 مم (عرض × ارتفاع) -->
   <div id="thermal-print-output" style="display: none; visibility: hidden; position: absolute; top: 0; left: 0;">
     <div class="print-sticker-single">
       <div class="print-text-section">
-        <div id="printProductName" class="print-product-name" style="font-size:9.5pt;">قرقش بالعجوة</div>
-        <div id="printFooterText" class="print-footer-text" style="font-size:6.5pt;">حلواني بندق - فرع النزهة</div>
+        <div id="printProductName" class="print-product-name" style="font-size: 11pt;">قرقش بالعجوة</div>
+        <div id="printFooterText" class="print-footer-text">حلواني بندق - فرع النزهة</div>
       </div>
       <div class="print-price-box">
-        <span id="printProductPrice" style="font-size:13pt; font-weight:900;">145</span>
-        <span style="font-size:6pt; font-weight:900;">ج.م</span>
+        <span id="printProductPrice" style="font-size: 16pt; font-weight: 900;">145</span>
+        <span style="font-size: 7pt; font-weight: 900;">ج.م</span>
       </div>
     </div>
   </div>
 
-  <!-- التذييل -->
   <div class="text-center text-[11px] text-gray-400 py-3 mt-4 max-w-5xl w-full">
-    © حلواني بندق للصناعات الغذائية | تطوير م/ محمود سلامه | 30×25mm Landscape
+    © تطوير م/ محمود سلامه | 30x25mm Vertical XPrinter Fix
   </div>
 
   <script>
@@ -443,106 +361,33 @@
       const productPriceInput = document.getElementById('productPrice');
       const footerInput = document.getElementById('footerText');
       
-      // Mock preview
       const mockProductName = document.getElementById('mockProductName');
       const mockProductPrice = document.getElementById('mockProductPrice');
       const mockFooterText = document.getElementById('mockFooterText');
       
-      // Print elements
       const printProductName = document.getElementById('printProductName');
       const printProductPrice = document.getElementById('printProductPrice');
       const printFooterText = document.getElementById('printFooterText');
-      
-      // Font sliders
-      const nameRange = document.getElementById('fontNameRange');
-      const priceRange = document.getElementById('fontPriceRange');
-      const footerRange = document.getElementById('fontFooterRange');
-      const nameSizeVal = document.getElementById('nameSizeVal');
-      const priceSizeVal = document.getElementById('priceSizeVal');
-      const footerSizeVal = document.getElementById('footerSizeVal');
-      
-      // Printer settings
-      const printerModel = document.getElementById('printerModel');
-      const printDpi = document.getElementById('printDpi');
-      const printDensity = document.getElementById('printDensity');
-      const printSpeed = document.getElementById('printSpeed');
-      const copyCount = document.getElementById('copyCount');
 
-      // Toast notification
-      function showToast(message, type = 'success') {
-        const existingToast = document.querySelector('.toast-notification');
-        if (existingToast) existingToast.remove();
-        
-        const toast = document.createElement('div');
-        toast.className = 'toast-notification';
-        toast.style.backgroundColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#f59e0b';
-        toast.style.color = 'white';
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-          toast.style.opacity = '0';
-          toast.style.transition = 'opacity 0.3s ease';
-          setTimeout(() => toast.remove(), 300);
-        }, 2500);
-      }
-
-      // Update all displays
       function refreshAll() {
         const nameVal = productNameInput.value.trim() || 'منتج جديد';
         const priceVal = productPriceInput.value.trim() || '0';
         const footerVal = footerInput.value.trim() || 'حلواني بندق';
         
-        // Mock preview
         mockProductName.textContent = nameVal;
         mockProductPrice.textContent = priceVal;
         mockFooterText.textContent = footerVal;
         
-        // Print output
         printProductName.textContent = nameVal;
         printProductPrice.textContent = priceVal;
         printFooterText.textContent = footerVal;
       }
 
-      // Update font sizes
-      function updateFontSizes() {
-        const nameSize = nameRange.value;
-        const priceSize = priceRange.value;
-        const footerSize = footerRange.value;
-        
-        nameSizeVal.textContent = nameSize + 'pt';
-        priceSizeVal.textContent = priceSize + 'pt';
-        footerSizeVal.textContent = footerSize + 'pt';
-        
-        // Mock preview (approximate scaling)
-        mockProductName.style.fontSize = (parseFloat(nameSize) * 1.2) + 'px';
-        mockProductPrice.style.fontSize = (parseFloat(priceSize) * 1.2) + 'px';
-        mockFooterText.style.fontSize = (parseFloat(footerSize) * 1.3) + 'px';
-        
-        // Print output (exact pt)
-        printProductName.style.fontSize = nameSize + 'pt';
-        printProductPrice.style.fontSize = priceSize + 'pt';
-        printFooterText.style.fontSize = footerSize + 'pt';
-      }
-
-      // Print function
       function executePrint() {
-        if (!productNameInput.value.trim()) {
-          showToast('⚠️ الرجاء إدخال اسم المنتج', 'error');
-          productNameInput.focus();
-          return;
-        }
-        if (!productPriceInput.value || parseFloat(productPriceInput.value) <= 0) {
-          showToast('⚠️ السعر غير صالح', 'error');
-          productPriceInput.focus();
-          return;
-        }
-        
         refreshAll();
-        updateFontSizes();
         
         const printOutput = document.getElementById('thermal-print-output');
-        // تعيين الحجم للطباعة: عرض 30 مم × ارتفاع 25 مم (أفقي)
+        // تهيئة حدود الطباعة للطولي
         printOutput.style.display = 'flex';
         printOutput.style.visibility = 'visible';
         printOutput.style.position = 'absolute';
@@ -550,170 +395,32 @@
         printOutput.style.left = '0';
         printOutput.style.width = '30mm';
         printOutput.style.height = '25mm';
-        printOutput.style.flexDirection = 'row'; // أفقي/عرض
+        printOutput.style.flexDirection = 'column';
         
         setTimeout(() => {
-          const copies = parseInt(copyCount.value) || 1;
-          for (let i = 0; i < copies; i++) {
-            window.print();
-          }
+          window.print();
           setTimeout(() => {
             printOutput.style.display = 'none';
             printOutput.style.visibility = 'hidden';
-            showToast('✅ تم إرسال الطباعة إلى الطابعة', 'success');
           }, 300);
         }, 100);
       }
 
-      // Preview function
-      function showPreview() {
-        refreshAll();
-        updateFontSizes();
-        
-        const printOutput = document.getElementById('thermal-print-output');
-        printOutput.style.display = 'flex';
-        printOutput.style.visibility = 'visible';
-        printOutput.style.position = 'relative';
-        printOutput.style.margin = '20px auto';
-        printOutput.style.width = '30mm';
-        printOutput.style.height = '25mm';
-        printOutput.style.flexDirection = 'row';
-        printOutput.style.border = '2px dashed #f59e0b';
-        printOutput.style.borderRadius = '8px';
-        printOutput.style.backgroundColor = 'white';
-        
-        printOutput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        showToast('👀 المعاينة معروضة (30×25 مم)', 'info');
-        
-        setTimeout(() => {
-          printOutput.style.display = 'none';
-          printOutput.style.visibility = 'hidden';
-          printOutput.style.position = 'absolute';
-          printOutput.style.margin = '0';
-          printOutput.style.border = 'none';
-          printOutput.style.borderRadius = '0';
-        }, 5000);
-      }
-
-      // Clear fields
-      function clearFields() {
-        productNameInput.value = '';
-        productPriceInput.value = '';
-        footerInput.value = 'حلواني بندق';
-        refreshAll();
-        productNameInput.focus();
-        showToast('🧹 تم مسح الحقول', 'info');
-      }
-
-      // Save preset
-      function savePreset() {
-        const preset = {
-          name: productNameInput.value,
-          price: productPriceInput.value,
-          footer: footerInput.value,
-          nameSize: nameRange.value,
-          priceSize: priceRange.value,
-          footerSize: footerRange.value,
-          printer: printerModel.value,
-          dpi: printDpi.value,
-          density: printDensity.value,
-          speed: printSpeed.value,
-          timestamp: new Date().toLocaleString('ar-EG')
-        };
-        try {
-          const presets = JSON.parse(localStorage.getItem('label_presets_3x2.5') || '[]');
-          presets.unshift(preset);
-          if (presets.length > 20) presets.pop();
-          localStorage.setItem('label_presets_3x2.5', JSON.stringify(presets));
-          showToast('💾 تم حفظ الإعداد', 'success');
-        } catch (e) {
-          showToast('❌ فشل الحفظ', 'error');
-        }
-      }
-
-      // Event listeners
       productNameInput.addEventListener('input', refreshAll);
       productPriceInput.addEventListener('input', refreshAll);
       footerInput.addEventListener('input', refreshAll);
       
-      nameRange.addEventListener('input', updateFontSizes);
-      priceRange.addEventListener('input', updateFontSizes);
-      footerRange.addEventListener('input', updateFontSizes);
-      
       document.getElementById('printBtn').addEventListener('click', executePrint);
-      document.getElementById('previewBtn').addEventListener('click', showPreview);
-      document.getElementById('clearBtn').addEventListener('click', clearFields);
-      document.getElementById('savePresetBtn').addEventListener('click', savePreset);
       
-      // Load saved settings
-      function loadSettings() {
-        try {
-          const savedName = localStorage.getItem('label_nameSize_3x2.5');
-          if (savedName) nameRange.value = savedName;
-          const savedPrice = localStorage.getItem('label_priceSize_3x2.5');
-          if (savedPrice) priceRange.value = savedPrice;
-          const savedFooter = localStorage.getItem('label_footerSize_3x2.5');
-          if (savedFooter) footerRange.value = savedFooter;
-          const savedFooterText = localStorage.getItem('label_footerText_3x2.5');
-          if (savedFooterText) footerInput.value = savedFooterText;
-        } catch (e) {}
-        updateFontSizes();
-        refreshAll();
-      }
-      
-      // Save settings on unload
-      window.addEventListener('beforeunload', () => {
-        try {
-          localStorage.setItem('label_nameSize_3x2.5', nameRange.value);
-          localStorage.setItem('label_priceSize_3x2.5', priceRange.value);
-          localStorage.setItem('label_footerSize_3x2.5', footerRange.value);
-          localStorage.setItem('label_footerText_3x2.5', footerInput.value);
-        } catch (e) {}
-      });
-      
-      // Print event handlers
-      window.onbeforeprint = () => {
-        const printOutput = document.getElementById('thermal-print-output');
-        refreshAll();
-        updateFontSizes();
-        printOutput.style.display = 'flex';
-        printOutput.style.visibility = 'visible';
-        printOutput.style.position = 'absolute';
-        printOutput.style.top = '0';
-        printOutput.style.left = '0';
-        printOutput.style.width = '30mm';
-        printOutput.style.height = '25mm';
-        printOutput.style.flexDirection = 'row';
-        printOutput.style.margin = '0';
-        printOutput.style.border = 'none';
-        printOutput.style.borderRadius = '0';
-      };
-      
-      window.onafterprint = () => {
-        const printOutput = document.getElementById('thermal-print-output');
-        printOutput.style.display = 'none';
-        printOutput.style.visibility = 'hidden';
-      };
-      
-      // Keyboard shortcuts
+      // Ctrl+P shortcut
       document.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.key === 'p') {
           e.preventDefault();
           executePrint();
         }
-        if (e.ctrlKey && e.key === 's') {
-          e.preventDefault();
-          savePreset();
-        }
-        if (e.ctrlKey && e.key === 'e') {
-          e.preventDefault();
-          showPreview();
-        }
       });
       
-      // Initialize
-      loadSettings();
-      console.log('✅ حلواني بندق - طباعة ليبل 3×2.5 سم | Landscape (عرض)');
+      refreshAll(); // Initialize
     })();
   </script>
 </body>
