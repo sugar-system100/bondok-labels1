@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-  <title>حلواني بندق | طباعة ليبل 3×4.5 سم | قطعة واحدة</title>
+  <title>حلواني بندق | طباعة ليبل 4×2.5 سم | قطعة واحدة</title>
   
   <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -100,13 +100,11 @@
       box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
     }
 
-    /* إعدادات الطباعة: صفحة 30×45 مم */
+    /* إعدادات الطباعة الديناميكية */
     @media print {
       html, body {
         margin: 0 !important;
         padding: 0 !important;
-        width: 30mm !important;
-        height: 45mm !important;
         overflow: hidden !important;
       }
       
@@ -115,7 +113,6 @@
       }
       
       @page {
-        size: 30mm 45mm !important;
         margin: 0 !important;
         padding: 0 !important;
       }
@@ -129,15 +126,9 @@
         position: absolute !important;
         top: 0 !important;
         left: 0 !important;
-        width: 30mm !important;
-        height: 45mm !important;
         margin: 0 !important;
         padding: 0 !important;
         background: white !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
         overflow: hidden !important;
         print-color-adjust: exact !important;
         -webkit-print-color-adjust: exact !important;
@@ -147,53 +138,53 @@
       }
       
       .print-sticker-single {
-        width: 28mm !important;
-        height: 43mm !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        padding: 2mm !important;
         background: white !important;
         box-sizing: border-box !important;
         page-break-inside: avoid !important;
         break-inside: avoid !important;
         direction: rtl !important;
         border: 0.5mm solid #000 !important;
-        border-radius: 3mm !important;
+        border-radius: 2mm !important;
+      }
+      
+      .print-info-section {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        overflow: hidden !important;
       }
       
       .print-product-name {
         font-weight: 900 !important;
-        text-align: center !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
-        width: 100% !important;
-        margin-bottom: 2mm !important;
-      }
-      
-      .print-price-box {
-        border: 1.5px solid #000 !important;
-        border-radius: 10px !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 3mm 5mm !important;
-        background: white !important;
-        margin: 2mm 0 !important;
+        text-align: right !important;
       }
       
       .print-footer-text {
         font-weight: 700 !important;
-        text-align: center !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
-        width: 100% !important;
-        margin-top: 2mm !important;
         color: #555 !important;
+        text-align: right !important;
+      }
+      
+      .print-price-box {
+        border: 1.5px solid #000 !important;
+        border-radius: 8px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: white !important;
+        flex-shrink: 0 !important;
+      }
+      
+      .print-text-price {
+        font-weight: 900 !important;
+        line-height: 1.2 !important;
       }
     }
 
@@ -247,12 +238,12 @@
         </div>
         <div>
           <h1 class="text-xl md:text-2xl font-black text-white">حلواني بندق</h1>
-          <p class="text-amber-100 text-xs font-semibold">طباعة ليبل 3×4.5 سم - قطعة واحدة</p>
+          <p class="text-amber-100 text-xs font-semibold">طباعة ليبل 4×2.5 سم - قطعة واحدة</p>
         </div>
       </div>
       <div class="hidden md:flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-1.5">
         <span class="status-dot active"></span>
-        <span class="text-white text-xs font-bold">30×45mm Ready</span>
+        <span class="text-white text-xs font-bold" id="sizeBadge">40×25mm</span>
       </div>
     </div>
 
@@ -262,11 +253,11 @@
       <!-- لوحة التحكم (يمين) -->
       <div class="w-full lg:w-[55%] p-5 md:p-6 space-y-5 border-b lg:border-b-0 lg:border-l border-amber-200/60">
         
-        <!-- إعدادات الطابعة -->
+        <!-- إعدادات الطابعة + الاتجاه -->
         <div class="glass-card rounded-2xl p-4 border border-amber-100">
           <div class="flex items-center gap-2 mb-3">
             <i class="fas fa-cog text-amber-600 text-sm"></i>
-            <h3 class="font-black text-gray-800 text-sm">⚙️ إعدادات الطابعة</h3>
+            <h3 class="font-black text-gray-800 text-sm">⚙️ إعدادات الطابعة والاتجاه</h3>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
@@ -276,6 +267,13 @@
                 <option value="zebra">Zebra GK/LP</option>
                 <option value="epson">Epson TM</option>
                 <option value="generic">حرارية عامة</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[11px] font-bold text-gray-600 block mb-1">📐 اتجاه الطباعة</label>
+              <select id="printOrientation" class="custom-select w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm font-bold bg-white focus:ring-2 focus:ring-amber-400 outline-none">
+                <option value="horizontal" selected>أفقي (4×2.5 سم)</option>
+                <option value="vertical">عمودي (2.5×4 سم)</option>
               </select>
             </div>
             <div>
@@ -303,7 +301,7 @@
                 <option value="4">4 ips</option>
               </select>
             </div>
-            <div class="md:col-span-2">
+            <div>
               <label class="text-[11px] font-bold text-gray-600 block mb-1">📋 عدد النسخ</label>
               <input type="number" id="copyCount" value="1" min="1" max="50" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm font-bold bg-white focus:ring-2 focus:ring-amber-400 outline-none">
             </div>
@@ -314,7 +312,7 @@
         <div class="bg-white/80 rounded-2xl p-4 border border-gray-200 shadow-sm animate-fade-in">
           <div class="flex items-center gap-2 mb-3">
             <span class="bg-amber-500 text-white text-xs font-black px-3 py-1 rounded-full">🏷️ المنتج</span>
-            <span class="text-xs text-gray-500 font-bold">مقاس 3×4.5 سم</span>
+            <span class="text-xs text-gray-500 font-bold">مقاس 4×2.5 سم (عرض × ارتفاع)</span>
           </div>
           <div class="space-y-3">
             <div>
@@ -340,18 +338,18 @@
           <div class="space-y-3">
             <div class="flex items-center justify-between gap-3">
               <span class="text-[11px] font-bold w-20">اسم المنتج</span>
-              <input type="range" id="fontNameRange" min="8" max="16" value="11" step="0.5" class="flex-1">
-              <span id="nameSizeVal" class="w-12 text-center font-black text-amber-700 text-sm">11pt</span>
+              <input type="range" id="fontNameRange" min="7" max="14" value="9" step="0.5" class="flex-1">
+              <span id="nameSizeVal" class="w-12 text-center font-black text-amber-700 text-sm">9pt</span>
             </div>
             <div class="flex items-center justify-between gap-3">
               <span class="text-[11px] font-bold w-20">السعر</span>
-              <input type="range" id="fontPriceRange" min="10" max="22" value="15" step="0.5" class="flex-1">
-              <span id="priceSizeVal" class="w-12 text-center font-black text-amber-700 text-sm">15pt</span>
+              <input type="range" id="fontPriceRange" min="9" max="20" value="13" step="0.5" class="flex-1">
+              <span id="priceSizeVal" class="w-12 text-center font-black text-amber-700 text-sm">13pt</span>
             </div>
             <div class="flex items-center justify-between gap-3">
               <span class="text-[11px] font-bold w-20">التذييل</span>
-              <input type="range" id="fontFooterRange" min="6" max="11" value="7.5" step="0.5" class="flex-1">
-              <span id="footerSizeVal" class="w-12 text-center font-black text-amber-700 text-sm">7.5pt</span>
+              <input type="range" id="fontFooterRange" min="5" max="9" value="6" step="0.5" class="flex-1">
+              <span id="footerSizeVal" class="w-12 text-center font-black text-amber-700 text-sm">6pt</span>
             </div>
           </div>
         </div>
@@ -373,7 +371,7 @@
         </div>
         
         <div class="text-[10px] text-gray-400 text-center bg-amber-50/80 p-2.5 rounded-xl">
-          💡 تأكد من ضبط هوامش الطباعة على "None" | المقاس: 30×45 مم
+          💡 تأكد من ضبط هوامش الطباعة على "None" | المقاس: 4×2.5 سم
         </div>
       </div>
 
@@ -381,47 +379,53 @@
       <div class="w-full lg:w-[45%] p-5 md:p-6 flex flex-col items-center justify-center bg-gradient-to-br from-amber-50/70 to-white">
         <div class="text-center mb-4">
           <span class="bg-amber-100 text-amber-800 text-[10px] font-black px-4 py-2 rounded-full inline-flex items-center gap-1">
-            <i class="fas fa-mobile-alt"></i> معاينة 3×4.5 سم
+            <i class="fas fa-mobile-alt"></i> معاينة <span id="previewLabel">4×2.5 سم أفقي</span>
           </span>
         </div>
         
         <div class="thermal-paper-preview p-5 w-full max-w-xs flex flex-col items-center">
-          <div class="bg-white rounded-2xl shadow-lg overflow-hidden border-2 border-amber-200/60 p-3" style="width: 140px; height: 210px; display: flex; flex-direction: column; align-items: center; justify-content: space-between;">
-            <!-- اسم المنتج -->
-            <div id="mockProductName" class="font-black text-gray-900 text-center w-full truncate px-1" style="font-size: 15px; line-height: 1.3;">قرقش بالعجوة</div>
-            <!-- السعر في صندوق -->
-            <div class="border-2 border-gray-800 rounded-xl px-3 py-1.5 text-center bg-white shadow-sm my-2">
-              <span id="mockProductPrice" class="font-black text-xl block leading-tight">145</span>
-              <span class="text-[10px] font-black block -mt-0.5">ج.م</span>
+          <!-- محاكاة الملصق (يتغير حسب الاتجاه) -->
+          <div id="mockStickerContainer" class="bg-white rounded-2xl shadow-lg overflow-hidden border-2 border-amber-200/60 p-2 flex items-center justify-between" style="width: 180px; height: 112px;">
+            <!-- معلومات المنتج (يمين) -->
+            <div class="flex flex-col justify-center overflow-hidden flex-1 pr-2">
+              <div id="mockProductName" class="font-black text-gray-900 truncate text-right" style="font-size: 12px; line-height: 1.3;">قرقش بالعجوة</div>
+              <div id="mockFooterText" class="font-bold text-gray-500 truncate text-right" style="font-size: 8px;">حلواني بندق - فرع النزهة</div>
             </div>
-            <!-- التذييل -->
-            <div id="mockFooterText" class="font-bold text-gray-500 text-center w-full truncate px-1" style="font-size: 10px;">حلواني بندق - فرع النزهة</div>
+            <!-- صندوق السعر (يسار) -->
+            <div class="border-2 border-gray-800 rounded-lg px-2 py-1 text-center bg-white shadow-sm flex-shrink-0 mr-1">
+              <span id="mockProductPrice" class="font-black text-base block leading-tight">145</span>
+              <span class="text-[8px] font-black block -mt-0.5">ج.م</span>
+            </div>
           </div>
           
           <div class="mt-4 text-center space-y-1">
-            <p class="text-[11px] text-gray-600 font-bold">📐 المقاس: 30×45 مم (قطعة واحدة)</p>
-            <p class="text-[10px] text-gray-400">عرض 3 سم × ارتفاع 4.5 سم</p>
+            <p class="text-[11px] text-gray-600 font-bold">📐 المقاس: <span id="dimensionLabel">4 سم × 2.5 سم (عرض × ارتفاع)</span></p>
+            <p class="text-[10px] text-gray-400">تنسيق <span id="orientationLabel">أفقي</span> - قطعة واحدة</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- منطقة الطباعة المخفية - قطعة واحدة 30×45 مم -->
+  <!-- منطقة الطباعة المخفية -->
   <div id="thermal-print-output" style="display: none; visibility: hidden; position: absolute; top: 0; left: 0;">
-    <div class="print-sticker-single">
-      <div id="printProductName" class="print-product-name" style="font-size:11pt;">قرقش بالعجوة</div>
-      <div class="print-price-box">
-        <span id="printProductPrice" class="print-text-price" style="font-size:15pt;">145</span>
-        <span style="font-size:7pt; font-weight:900;">ج.م</span>
+    <div class="print-sticker-single" id="printSticker">
+      <!-- معلومات المنتج (يمين) -->
+      <div class="print-info-section" id="printInfoSection">
+        <div id="printProductName" class="print-product-name" style="font-size:9pt;">قرقش بالعجوة</div>
+        <div id="printFooterText" class="print-footer-text" style="font-size:6pt;">حلواني بندق - فرع النزهة</div>
       </div>
-      <div id="printFooterText" class="print-footer-text" style="font-size:7.5pt;">حلواني بندق - فرع النزهة</div>
+      <!-- صندوق السعر (يسار) -->
+      <div class="print-price-box" id="printPriceBox">
+        <span id="printProductPrice" class="print-text-price" style="font-size:13pt;">145</span>
+        <span style="font-size:6pt; font-weight:900;">ج.م</span>
+      </div>
     </div>
   </div>
 
   <!-- التذييل -->
   <div class="text-center text-[11px] text-gray-400 py-3 mt-4 max-w-5xl w-full">
-    © حلواني بندق للصناعات الغذائية | تطوير م/ محمود سلامه | 30×45mm
+    © حلواني بندق للصناعات الغذائية | تطوير م/ محمود سلامه | 40×25mm
   </div>
 
   <script>
@@ -430,13 +434,23 @@
       const productNameInput = document.getElementById('productName');
       const productPriceInput = document.getElementById('productPrice');
       const footerInput = document.getElementById('footerText');
+      const printOrientation = document.getElementById('printOrientation');
+      const sizeBadge = document.getElementById('sizeBadge');
+      const previewLabel = document.getElementById('previewLabel');
+      const dimensionLabel = document.getElementById('dimensionLabel');
+      const orientationLabel = document.getElementById('orientationLabel');
       
-      // Mock preview
+      // Mock preview elements
+      const mockStickerContainer = document.getElementById('mockStickerContainer');
       const mockProductName = document.getElementById('mockProductName');
       const mockProductPrice = document.getElementById('mockProductPrice');
       const mockFooterText = document.getElementById('mockFooterText');
       
       // Print elements
+      const printOutput = document.getElementById('thermal-print-output');
+      const printSticker = document.getElementById('printSticker');
+      const printInfoSection = document.getElementById('printInfoSection');
+      const printPriceBox = document.getElementById('printPriceBox');
       const printProductName = document.getElementById('printProductName');
       const printProductPrice = document.getElementById('printProductPrice');
       const printFooterText = document.getElementById('printFooterText');
@@ -456,6 +470,8 @@
       const printSpeed = document.getElementById('printSpeed');
       const copyCount = document.getElementById('copyCount');
 
+      let currentOrientation = 'horizontal'; // horizontal or vertical
+
       // Toast notification
       function showToast(message, type = 'success') {
         const existingToast = document.querySelector('.toast-notification');
@@ -473,6 +489,80 @@
           toast.style.transition = 'opacity 0.3s ease';
           setTimeout(() => toast.remove(), 300);
         }, 2500);
+      }
+
+      // Update orientation display and sizes
+      function updateOrientation() {
+        currentOrientation = printOrientation.value;
+        
+        if (currentOrientation === 'horizontal') {
+          // أفقي: عرض 40 مم × ارتفاع 25 مم
+          sizeBadge.textContent = '40×25mm';
+          previewLabel.textContent = '4×2.5 سم أفقي';
+          dimensionLabel.textContent = '4 سم × 2.5 سم (عرض × ارتفاع)';
+          orientationLabel.textContent = 'أفقي';
+          
+          // Mock preview
+          mockStickerContainer.style.width = '180px';
+          mockStickerContainer.style.height = '112px';
+          mockStickerContainer.style.flexDirection = 'row';
+          
+          // Print output
+          printOutput.style.width = '40mm';
+          printOutput.style.height = '25mm';
+          printOutput.style.flexDirection = 'row';
+          printSticker.style.width = '38mm';
+          printSticker.style.height = '23mm';
+          printSticker.style.flexDirection = 'row';
+          printSticker.style.alignItems = 'center';
+          printSticker.style.justifyContent = 'space-between';
+          printInfoSection.style.alignItems = 'flex-start';
+          printInfoSection.style.paddingLeft = '2mm';
+          printInfoSection.style.flex = '1';
+          printPriceBox.style.marginRight = '2mm';
+          
+          // Update print page size
+          document.getElementById('dynamic-page-style')?.remove();
+          const style = document.createElement('style');
+          style.id = 'dynamic-page-style';
+          style.textContent = `@media print { @page { size: 40mm 25mm !important; } }`;
+          document.head.appendChild(style);
+          
+        } else {
+          // عمودي: عرض 25 مم × ارتفاع 40 مم
+          sizeBadge.textContent = '25×40mm';
+          previewLabel.textContent = '2.5×4 سم عمودي';
+          dimensionLabel.textContent = '2.5 سم × 4 سم (عرض × ارتفاع)';
+          orientationLabel.textContent = 'عمودي';
+          
+          // Mock preview
+          mockStickerContainer.style.width = '112px';
+          mockStickerContainer.style.height = '180px';
+          mockStickerContainer.style.flexDirection = 'column';
+          
+          // Print output
+          printOutput.style.width = '25mm';
+          printOutput.style.height = '40mm';
+          printOutput.style.flexDirection = 'column';
+          printSticker.style.width = '23mm';
+          printSticker.style.height = '38mm';
+          printSticker.style.flexDirection = 'column';
+          printSticker.style.alignItems = 'center';
+          printSticker.style.justifyContent = 'space-between';
+          printInfoSection.style.alignItems = 'center';
+          printInfoSection.style.paddingLeft = '0';
+          printInfoSection.style.paddingTop = '2mm';
+          printInfoSection.style.flex = '0';
+          printPriceBox.style.marginRight = '0';
+          printPriceBox.style.marginTop = '2mm';
+          
+          // Update print page size
+          document.getElementById('dynamic-page-style')?.remove();
+          const style = document.createElement('style');
+          style.id = 'dynamic-page-style';
+          style.textContent = `@media print { @page { size: 25mm 40mm !important; } }`;
+          document.head.appendChild(style);
+        }
       }
 
       // Update all displays
@@ -503,9 +593,9 @@
         footerSizeVal.textContent = footerSize + 'pt';
         
         // Mock preview (approximate)
-        mockProductName.style.fontSize = (parseFloat(nameSize) * 1.2) + 'px';
-        mockProductPrice.style.fontSize = (parseFloat(priceSize) * 1.2) + 'px';
-        mockFooterText.style.fontSize = (parseFloat(footerSize) * 1.3) + 'px';
+        mockProductName.style.fontSize = (parseFloat(nameSize) * 1.1) + 'px';
+        mockProductPrice.style.fontSize = (parseFloat(priceSize) * 1.1) + 'px';
+        mockFooterText.style.fontSize = (parseFloat(footerSize) * 1.2) + 'px';
         
         // Print output (exact pt)
         printProductName.style.fontSize = nameSize + 'pt';
@@ -528,15 +618,13 @@
         
         refreshAll();
         updateFontSizes();
+        updateOrientation();
         
-        const printOutput = document.getElementById('thermal-print-output');
         printOutput.style.display = 'flex';
         printOutput.style.visibility = 'visible';
         printOutput.style.position = 'absolute';
         printOutput.style.top = '0';
         printOutput.style.left = '0';
-        printOutput.style.width = '30mm';
-        printOutput.style.height = '45mm';
         
         setTimeout(() => {
           const copies = parseInt(copyCount.value) || 1;
@@ -555,14 +643,12 @@
       function showPreview() {
         refreshAll();
         updateFontSizes();
+        updateOrientation();
         
-        const printOutput = document.getElementById('thermal-print-output');
         printOutput.style.display = 'flex';
         printOutput.style.visibility = 'visible';
         printOutput.style.position = 'relative';
         printOutput.style.margin = '20px auto';
-        printOutput.style.width = '30mm';
-        printOutput.style.height = '45mm';
         printOutput.style.border = '2px dashed #f59e0b';
         printOutput.style.borderRadius = '8px';
         printOutput.style.backgroundColor = 'white';
@@ -599,6 +685,7 @@
           nameSize: nameRange.value,
           priceSize: priceRange.value,
           footerSize: footerRange.value,
+          orientation: printOrientation.value,
           printer: printerModel.value,
           dpi: printDpi.value,
           density: printDensity.value,
@@ -606,10 +693,10 @@
           timestamp: new Date().toLocaleString('ar-EG')
         };
         try {
-          const presets = JSON.parse(localStorage.getItem('label_presets_3x4.5') || '[]');
+          const presets = JSON.parse(localStorage.getItem('label_presets_4x2.5') || '[]');
           presets.unshift(preset);
           if (presets.length > 20) presets.pop();
-          localStorage.setItem('label_presets_3x4.5', JSON.stringify(presets));
+          localStorage.setItem('label_presets_4x2.5', JSON.stringify(presets));
           showToast('💾 تم حفظ الإعداد', 'success');
         } catch (e) {
           showToast('❌ فشل الحفظ', 'error');
@@ -620,6 +707,12 @@
       productNameInput.addEventListener('input', refreshAll);
       productPriceInput.addEventListener('input', refreshAll);
       footerInput.addEventListener('input', refreshAll);
+      
+      printOrientation.addEventListener('change', () => {
+        updateOrientation();
+        refreshAll();
+        showToast('📐 تم تغيير الاتجاه إلى: ' + (printOrientation.value === 'horizontal' ? 'أفقي' : 'عمودي'), 'info');
+      });
       
       nameRange.addEventListener('input', updateFontSizes);
       priceRange.addEventListener('input', updateFontSizes);
@@ -633,15 +726,18 @@
       // Load saved settings
       function loadSettings() {
         try {
-          const savedName = localStorage.getItem('label_nameSize_3x4.5');
+          const savedName = localStorage.getItem('label_nameSize_4x2.5');
           if (savedName) nameRange.value = savedName;
-          const savedPrice = localStorage.getItem('label_priceSize_3x4.5');
+          const savedPrice = localStorage.getItem('label_priceSize_4x2.5');
           if (savedPrice) priceRange.value = savedPrice;
-          const savedFooter = localStorage.getItem('label_footerSize_3x4.5');
+          const savedFooter = localStorage.getItem('label_footerSize_4x2.5');
           if (savedFooter) footerRange.value = savedFooter;
-          const savedFooterText = localStorage.getItem('label_footerText_3x4.5');
+          const savedFooterText = localStorage.getItem('label_footerText_4x2.5');
           if (savedFooterText) footerInput.value = savedFooterText;
+          const savedOrientation = localStorage.getItem('label_orientation_4x2.5');
+          if (savedOrientation) printOrientation.value = savedOrientation;
         } catch (e) {}
+        updateOrientation();
         updateFontSizes();
         refreshAll();
       }
@@ -649,32 +745,30 @@
       // Save settings on unload
       window.addEventListener('beforeunload', () => {
         try {
-          localStorage.setItem('label_nameSize_3x4.5', nameRange.value);
-          localStorage.setItem('label_priceSize_3x4.5', priceRange.value);
-          localStorage.setItem('label_footerSize_3x4.5', footerRange.value);
-          localStorage.setItem('label_footerText_3x4.5', footerInput.value);
+          localStorage.setItem('label_nameSize_4x2.5', nameRange.value);
+          localStorage.setItem('label_priceSize_4x2.5', priceRange.value);
+          localStorage.setItem('label_footerSize_4x2.5', footerRange.value);
+          localStorage.setItem('label_footerText_4x2.5', footerInput.value);
+          localStorage.setItem('label_orientation_4x2.5', printOrientation.value);
         } catch (e) {}
       });
       
       // Print event handlers
       window.onbeforeprint = () => {
-        const printOutput = document.getElementById('thermal-print-output');
         refreshAll();
         updateFontSizes();
+        updateOrientation();
         printOutput.style.display = 'flex';
         printOutput.style.visibility = 'visible';
         printOutput.style.position = 'absolute';
         printOutput.style.top = '0';
         printOutput.style.left = '0';
-        printOutput.style.width = '30mm';
-        printOutput.style.height = '45mm';
         printOutput.style.margin = '0';
         printOutput.style.border = 'none';
         printOutput.style.borderRadius = '0';
       };
       
       window.onafterprint = () => {
-        const printOutput = document.getElementById('thermal-print-output');
         printOutput.style.display = 'none';
         printOutput.style.visibility = 'hidden';
       };
@@ -697,7 +791,7 @@
       
       // Initialize
       loadSettings();
-      console.log('✅ حلواني بندق - طباعة ليبل 3×4.5 سم | قطعة واحدة');
+      console.log('✅ حلواني بندق - طباعة ليبل 4×2.5 سم | قطعة واحدة | دعم أفقي/عمودي');
     })();
   </script>
 </body>
