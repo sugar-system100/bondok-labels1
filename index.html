@@ -131,13 +131,19 @@
               <label class="text-[11px] font-bold text-gray-600 mb-1 block">اسم المنتج</label>
               <input type="text" id="productName" value="قرقش بالعجوة" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold focus:ring-amber-500 bg-white">
             </div>
-            <div>
-              <label class="text-[11px] font-bold text-gray-600 mb-1 block">⚖️ وزن المنتج</label>
-              <input type="text" id="productWeight" value="500 جرام" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-amber-900 focus:ring-amber-500 bg-white">
+            <div class="grid grid-cols-2 gap-3.5">
+              <div>
+                <label class="text-[11px] font-bold text-gray-600 mb-1 block">⚖️ وزن المنتج</label>
+                <input type="text" id="productWeight" value="500 جرام" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-amber-900 focus:ring-amber-500 bg-white">
+              </div>
+              <div>
+                <label class="text-[11px] font-bold text-gray-600 mb-1 block">السعر (ج.م)</label>
+                <input type="number" id="productPrice" value="145" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-center font-black text-amber-700 focus:ring-amber-500 bg-white">
+              </div>
             </div>
             <div>
-              <label class="text-[11px] font-bold text-gray-600 mb-1 block">السعر (ج.م)</label>
-              <input type="number" id="productPrice" value="145" class="w-full border border-gray-300 rounded-xl px-3.5 py-3 text-center font-black text-2xl text-amber-700 focus:ring-amber-500 bg-white shadow-inner">
+              <label class="text-[11px] font-bold text-gray-600 mb-1 block">🏪 اسم الفرع / النص السفلي</label>
+              <input type="text" id="branchName" value="حلواني بندق - فرع النزهة" class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold focus:ring-amber-500 bg-white">
             </div>
           </div>
         </div>
@@ -171,7 +177,7 @@
                 <span class="text-[9px] font-black text-gray-800">ج.م</span>
               </div>
               
-              <div class="font-bold text-gray-500 w-full truncate" style="font-size: 8px; line-height: 1;">حلواني بندق - فرع النزهة</div>
+              <div id="mockBranchName" class="font-bold text-gray-600 w-full truncate" style="font-size: 8px; line-height: 1;">حلواني بندق - فرع النزهة</div>
             </div>
 
           </div>
@@ -192,15 +198,15 @@
         <span id="printProductPrice" class="print-price-val">145</span>
         <span class="print-price-curr">ج.م</span>
       </div>
-      <div class="print-footer-text">حلواني بندق - فرع النزهة</div>
+      <div id="printBranchName" class="print-footer-text">حلواني بندق - فرع النزهة</div>
     </div>
   </div>
 
   <div class="text-center text-[11px] text-gray-400 py-3 mt-auto max-w-6xl w-full">
-    © حلواني بندق Pro | م/ محمود سلامه | إصلاح خطأ طباعة قطعتين 40x25mm
+    © حلواني بندق Pro | م/ محمود سلامه | دعم كامل للأسود الصريح (XPrinter)
   </div>
 
-  <script {nonce}>
+  <script>
     (function() {
       // DOM Elements
       const widthInput = document.getElementById('stickerWidth');
@@ -208,6 +214,7 @@
       const pNameInput = document.getElementById('productName');
       const pWeightInput = document.getElementById('productWeight');
       const pPriceInput = document.getElementById('productPrice');
+      const pBranchInput = document.getElementById('branchName');
       
       // Preview Elements
       const previewContainer = document.getElementById('previewContainerMock');
@@ -216,16 +223,19 @@
       const mockName = document.getElementById('mockProductName');
       const mockWeight = document.getElementById('mockProductWeight');
       const mockPrice = document.getElementById('mockProductPrice');
+      const mockBranch = document.getElementById('mockBranchName');
       
       // Print Output Elements
       const printName = document.getElementById('printProductName');
       const printWeight = document.getElementById('printProductWeight');
       const printPrice = document.getElementById('printProductPrice');
+      const printBranch = document.getElementById('printBranchName');
 
       function refreshAll() {
         const nameVal = pNameInput.value.trim() || 'منتج جديد';
         const weightVal = pWeightInput.value.trim();
         const priceVal = pPriceInput.value.trim() || '0';
+        const branchVal = pBranchInput.value.trim() || 'اسم الفرع';
         
         let wVal = parseInt(widthInput.value) || 40;
         let hVal = parseInt(heightInput.value) || 25;
@@ -233,6 +243,7 @@
         // --- 1. تحديث واجهة المعاينة ---
         mockName.textContent = nameVal;
         mockPrice.textContent = priceVal;
+        mockBranch.textContent = branchVal;
         
         if(weightVal) {
           mockWeight.textContent = weightVal;
@@ -251,6 +262,8 @@
         // --- 2. تحديث نصوص الطباعة المخفية ---
         printName.textContent = nameVal;
         printPrice.textContent = priceVal;
+        printBranch.textContent = branchVal;
+        
         if(weightVal) {
           printWeight.textContent = weightVal;
           printWeight.style.display = 'block';
@@ -259,7 +272,7 @@
         }
       }
 
-      // كود CSS للطباعة: يضمن عدم تجاوز الارتفاع 25 ملم بأي شكل
+      // كود CSS للطباعة: ألوان سوداء نقية 100% لمنع التنقيط في الطابعة الحرارية
       function generateDynamicPrintCSS() {
         const wVal = parseInt(widthInput.value) || 40;
         const hVal = parseInt(heightInput.value) || 25;
@@ -301,30 +314,32 @@
               max-height: ${hVal}mm !important;
               display: flex !important; flex-direction: column !important;
               align-items: center !important; justify-content: space-between !important;
-              padding: 1mm 1mm !important; /* تقليل الهوامش الداخلية */
+              padding: 1mm 1mm !important;
               box-sizing: border-box !important; text-align: center !important;
               direction: rtl !important; overflow: hidden !important;
             }
 
             .print-product-name {
               font-size: 10pt !important; font-weight: 900 !important;
-              color: #000 !important; line-height: 1.1 !important;
+              color: #000 !important; /* أسود صريح */
+              line-height: 1.1 !important;
               max-height: 4.5mm !important;
               width: 100% !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
             }
 
             .print-product-weight {
-              font-size: 7.5pt !important; font-weight: 800 !important;
-              color: #000 !important; 
+              font-size: 7.5pt !important; font-weight: 900 !important;
+              color: #000 !important; /* أسود صريح */
               max-height: 3.5mm !important;
               line-height: 1 !important;
               margin: 0.2mm 0 !important;
             }
 
             .print-price-box {
-              border: 1.5px solid #000 !important; border-radius: 0.8mm !important;
+              border: 1.5px solid #000 !important; /* إطار أسود صريح */
+              border-radius: 0.8mm !important;
               width: 80% !important; 
-              height: 8.5mm !important; /* تثبيت ارتفاع مربع السعر منعاً للزيادة */
+              height: 8.5mm !important; 
               display: flex !important; justify-content: center !important; align-items: baseline !important; gap: 0.5mm !important;
               box-sizing: border-box !important; overflow: hidden !important;
             }
@@ -333,8 +348,9 @@
             .print-price-curr { font-size: 6.5pt !important; font-weight: 900 !important; color: #000 !important; }
 
             .print-footer-text {
-              font-size: 6pt !important; font-weight: 700 !important;
-              color: #333 !important; width: 100% !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
+              font-size: 6pt !important; font-weight: 900 !important; /* تم زيادة الوزن لضمان وضوحه في الطباعة الحرارية */
+              color: #000 !important; /* أسود صريح بدلاً من الرمادي */
+              width: 100% !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
               max-height: 3mm !important;
               line-height: 1 !important;
             }
@@ -364,6 +380,7 @@
       pNameInput.addEventListener('input', refreshAll);
       pWeightInput.addEventListener('input', refreshAll);
       pPriceInput.addEventListener('input', refreshAll);
+      pBranchInput.addEventListener('input', refreshAll);
       widthInput.addEventListener('input', refreshAll);
       heightInput.addEventListener('input', refreshAll);
       
